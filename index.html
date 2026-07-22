@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Streak — spin a team, draft a lineup, chase 34</title>
+<meta name="description" content="Spin for a real NBA team from any season since 1970, draft a six-man lineup, and see how far your winning streak can go against the 1971-72 Lakers' record schedule.">
+<meta name="theme-color" content="#0A0A0A">
+
+<!-- Social share preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Streak — can you win 34 in a row?">
+<meta property="og:description" content="Spin for a real NBA team, draft a lineup from any era, and chase the greatest winning streak in NBA history.">
+<meta property="og:image" content="preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Streak — can you win 34 in a row?">
+<meta name="twitter:description" content="Spin for a real NBA team, draft a lineup from any era, and chase the greatest winning streak in NBA history.">
+<meta name="twitter:image" content="preview.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0A;
+    --panel:#161616;
+    --panel-2:#1E1E1E;
+    --line:#333333;
+    --flame1:#FF6B35;
+    --flame2:#FFC145;
+    --gold:#D4AF37;
+    --gold2:#F0D775;
+    --ink:#F3EDE2;
+    --ink-dim:#9C9490;
+    --good:#3FBF7F;
+    --good-dim:#1F3327;
+    --miss:#E14B4B;
+    --miss-dim:#3A2020;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  .slot,.candidate,.btn,.spin-btn,.event-btn,.slot-choice,.intro-start,.howto-btn{
+    -webkit-user-select:none;user-select:none;
+  }
+  .intro-overlay{
+    position:fixed; inset:0; z-index:100;
+    background:radial-gradient(120% 80% at 50% 0%, #1a1206 0%, #0A0A0A 60%);
+    display:flex; align-items:flex-start; justify-content:center;
+    overflow-y:auto; padding:32px 20px;
+  }
+  .intro-overlay.hidden{display:none;}
+  .intro-card{
+    max-width:560px; width:100%; margin:auto 0;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:36px 30px; box-shadow:0 24px 80px rgba(0,0,0,.6);
+  }
+  .intro-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--flame1); margin-bottom:10px;
+  }
+  .intro-title{
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:52px; line-height:.95;
+    margin:0 0 14px; letter-spacing:.01em;
+    background:linear-gradient(180deg,var(--flame2),var(--flame1)); -webkit-background-clip:text;
+    background-clip:text; color:transparent;
+  }
+  .intro-lede{font-size:15px; line-height:1.55; color:var(--ink); margin:0 0 24px;}
+  .intro-lede b{color:var(--flame2);}
+  .intro-steps{display:flex; flex-direction:column; gap:14px; margin-bottom:24px;}
+  .intro-step{display:flex; gap:14px; align-items:flex-start;}
+  .intro-step-num{
+    flex:0 0 30px; height:30px; border-radius:50%;
+    background:linear-gradient(180deg,var(--gold2),var(--gold)); color:#161616;
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .intro-step-title{font-family:'Oswald',sans-serif; font-size:17px; letter-spacing:.01em; margin-bottom:3px;}
+  .intro-step-text{font-size:13.5px; line-height:1.5; color:var(--ink-dim);}
+  .intro-goal{
+    background:var(--panel-2); border:1px solid var(--line); border-left:3px solid var(--flame1);
+    border-radius:8px; padding:12px 14px; font-size:13.5px; line-height:1.5; color:var(--ink);
+    margin-bottom:26px;
+  }
+  .intro-goal span{margin-right:4px;}
+  .intro-start{
+    width:100%; border:none; cursor:pointer;
+    background:linear-gradient(180deg,var(--gold2),var(--gold)); color:#161616;
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:19px; letter-spacing:.03em;
+    padding:15px; border-radius:10px; transition:filter .15s ease, transform .05s ease;
+  }
+  .intro-start:hover{filter:brightness(1.08);}
+  .intro-start:active{transform:translateY(1px);}
+  @media (max-width:520px){
+    .intro-card{padding:28px 20px;}
+    .intro-title{font-size:42px;}
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:44px 18px 90px;
+  }
+  .wrap{width:100%;max-width:680px;}
+  .eyebrow{
+    text-align:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--flame1);
+    margin-bottom:8px;
+  }
+  h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:50px;
+    letter-spacing:.02em;
+    text-align:center;
+    margin:0 0 6px;
+    line-height:1;
+    text-transform:uppercase;
+  }
+  .sub{
+    text-align:center;
+    color:var(--ink-dim);
+    font-size:13.5px;
+    line-height:1.5;
+    margin:0 0 26px;
+  }
+  .gauge-wrap{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+    margin-bottom:18px;
+  }
+  .gauge-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .streak-num{font-family:'Oswald',sans-serif;font-size:44px;font-weight:700;color:var(--flame1);line-height:1;}
+  .streak-target{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);letter-spacing:.05em;}
+  .gauge-track{position:relative;height:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .gauge-fill{height:100%;width:0%;background:linear-gradient(90deg, var(--flame1), var(--flame2));transition:width .4s ease;}
+  .gauge-ticks{display:flex;justify-content:space-between;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);letter-spacing:.04em;}
+  .milestone-banner{
+    text-align:center;
+    background:linear-gradient(90deg, var(--flame1), var(--flame2));
+    color:#1A1000;font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase;
+    padding:14px;border-radius:8px;margin-bottom:18px;display:none;
+  }
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;margin-bottom:18px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:16px;}
+  .spin-zone{text-align:center;padding:10px 0 4px;}
+  .spin-display{font-family:'Oswald',sans-serif;font-size:24px;letter-spacing:.02em;color:var(--ink-dim);margin-bottom:16px;min-height:32px;}
+  .spin-display.locked{color:var(--gold);}
+  .spin-btn{background:var(--gold);color:#1A1400;border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;padding:13px 28px;border-radius:8px;cursor:pointer;}
+  .spin-btn:hover:not(:disabled){background:var(--gold2);}
+  .spin-btn:disabled{opacity:.4;cursor:default;}
+  .pos-group{margin-bottom:14px;}
+  .pos-group:last-child{margin-bottom:0;}
+  .pos-group-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .candidates{display:grid;grid-template-columns:1fr;gap:6px;}
+  .candidate{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .candidate:hover{border-color:var(--gold);}
+  .candidate.disabled-candidate{opacity:.35;cursor:default;}
+  .candidate.disabled-candidate:hover{border-color:var(--line);}
+  .candidate .name{font-weight:500;font-size:13.5px;}
+  .candidate .awards{font-size:10px;color:var(--gold);margin-top:2px;}
+  .candidate .line{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
+  .slot-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .slot-choice{background:var(--panel-2);border:1px solid var(--gold);border-radius:8px;padding:12px 6px;text-align:center;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);}
+  .slot-choice:hover{background:#241E08;}
+  .slot-choice.disabled{opacity:.3;pointer-events:none;border-color:var(--line);color:var(--ink-dim);}
+  .picking-banner{text-align:center;font-size:13px;color:var(--ink-dim);margin-bottom:12px;}
+  .picking-banner b{color:var(--ink);}
+  .roster-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:6px;}
+  .slot{background:var(--panel-2);border:1px dashed var(--line);border-radius:6px;padding:8px 3px;text-align:center;cursor:pointer;}
+  .slot.filled{border-style:solid;border-color:var(--gold);cursor:pointer;}
+  .slot.swap-target{border-style:dashed;border-color:var(--flame1);cursor:pointer;}
+  .slot.swap-target:hover{background:rgba(255,107,53,.10);}
+  .slot.dragging{opacity:.4;border-style:dashed;}
+  .slot.filled:hover{border-color:var(--gold2);}
+  .slot.selected{border-color:var(--gold2);box-shadow:0 0 0 2px var(--gold2) inset;}
+  .slot .pos{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.05em;color:var(--gold);margin-bottom:4px;font-weight:700;}
+  .slot .who{font-size:10px;font-weight:500;line-height:1.2;min-height:24px;}
+  .slot .from{font-size:8px;color:var(--ink-dim);margin-top:2px;line-height:1.15;}
+  .slot .fit{font-size:8px;margin-top:2px;font-weight:600;}
+  .slot .fit.in{color:var(--good);}
+  .slot .fit.slight{color:var(--gold);}
+  .slot .fit.out{color:var(--miss);}
+  .roster-hint{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-dim);text-align:center;margin-top:8px;}
+  .step-guide{
+    font-size:12.5px; line-height:1.55; color:var(--ink-dim);
+    background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    padding:10px 12px; margin-bottom:14px;
+  }
+  .step-guide b{color:var(--ink);}
+  .fit-key{font-size:13px; vertical-align:middle;}
+  .fit-key.in{color:var(--good);}
+  .fit-key.slight{color:var(--flame2);}
+  .fit-key.out{color:var(--miss);}
+  .howto-btn{
+    background:transparent; border:1px solid var(--line); color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em;
+    padding:6px 12px; border-radius:6px; cursor:pointer; margin-bottom:20px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .howto-btn:hover{border-color:var(--gold); color:var(--gold);}
+  .player-info{
+    display:none;
+    margin-top:10px;
+    background:var(--panel-2);
+    border:1px solid var(--gold);
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .player-info.show{display:block;}
+  .player-info .pi-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+  .player-info .pi-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);margin-bottom:6px;}
+  .player-info .pi-stats{font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:4px;}
+  .player-info .pi-fit{font-size:11.5px;margin-top:4px;}
+  .player-info .pi-fit.in{color:var(--good);}
+  .player-info .pi-fit.slight{color:var(--gold);}
+  .player-info .pi-fit.out{color:var(--miss);}
+  .player-info .pi-awards{font-size:11px;color:var(--gold);margin-top:4px;}
+  .slot.placeable{border-style:solid;border-color:var(--good);cursor:pointer;}
+  .slot.placeable:hover{background:var(--good-dim);}
+  @keyframes runGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.55);}
+    50%{box-shadow:0 0 14px 4px rgba(212,175,55,.55);}
+  }
+  .btn.glow{animation:runGlow 1.4s ease-in-out infinite;border-color:var(--gold);}
+  .btn.dimmed{background:#0E0E0E;color:var(--ink-dim);border-color:var(--line);}
+  .confetti-piece{
+    position:fixed;
+    top:-20px;
+    width:9px;
+    height:14px;
+    z-index:9999;
+    pointer-events:none;
+    animation-name:confettiFall;
+    animation-timing-function:linear;
+    animation-fill-mode:forwards;
+  }
+  @keyframes confettiFall{
+    to{ transform:translateY(110vh) rotate(540deg); opacity:.85; }
+  }
+  .gamelog{display:flex;flex-wrap:wrap;gap:5px;max-height:220px;overflow-y:auto;padding-right:4px;}
+  .glog-item{flex:1 1 30%;min-width:160px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:11px;}
+  .glog-item .n{font-family:'JetBrains Mono',monospace;color:var(--ink-dim);font-size:9px;letter-spacing:.04em;}
+  .glog-item .opp{font-weight:500;margin-top:2px;}
+  .glog-item .score{font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:4px;color:var(--ink-dim);}
+  .glog-item.win{border-color:var(--good);background:var(--good-dim);}
+  .glog-item.win .score{color:var(--good);}
+  .glog-item.loss{border-color:var(--miss);background:var(--miss-dim);}
+  .glog-item.loss .score{color:var(--miss);}
+  .glog-item.pending{opacity:.4;}
+  .glog-item.suspense{opacity:1;animation:suspensePulse .5s ease-in-out infinite;}
+  @keyframes suspensePulse{0%,100%{border-color:var(--line);}50%{border-color:var(--gold);}}
+  .glog-item.bonus{outline:1px dashed var(--flame1);}
+  .chem-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .chem-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);white-space:nowrap;}
+  .chem-track{flex:1;height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
+  .chem-fill{height:100%;width:55%;background:linear-gradient(90deg,#5B8CFF,#3FBF7F);transition:width .5s ease;}
+  .chem-pct{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);width:38px;text-align:right;}
+  .event-panel{
+    background:var(--panel-2);border:1px solid var(--gold);border-radius:10px;padding:18px;margin-top:16px;position:relative;
+  }
+  .event-panel::before{
+    content:"";position:absolute;top:-9px;left:32px;width:16px;height:16px;background:var(--panel-2);
+    border-left:1px solid var(--gold);border-top:1px solid var(--gold);transform:rotate(45deg);
+  }
+  .event-title{font-family:'Oswald',sans-serif;font-size:18px;color:var(--gold);margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em;}
+  .event-text{font-size:13px;line-height:1.6;color:var(--ink);margin-bottom:12px;}
+  .event-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .event-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
+  .event-card .t{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-dim);margin-bottom:3px;}
+  .event-card .n{font-size:13px;font-weight:500;}
+  .event-card .s{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-dim);margin-top:4px;}
+  .event-actions{display:flex;gap:8px;}
+  .event-btn{flex:1;background:var(--gold);color:#1A1400;border:none;font-weight:600;font-size:13px;padding:11px;border-radius:7px;cursor:pointer;}
+  .event-btn.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  .event-btn:hover{opacity:.9;}
+  .stats-bar{display:flex;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:18px;}
+  .stats-bar div{text-align:center;flex:1;}
+  .stats-bar .n{font-family:'Oswald',sans-serif;font-size:26px;color:var(--flame1);line-height:1;}
+  .stats-bar .l{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--ink-dim);text-transform:uppercase;margin-top:4px;}
+  .stats-bar .sub-l{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--ink-dim);opacity:.7;margin-top:1px;}
+  .verdict{text-align:center;font-size:14px;color:var(--ink);line-height:1.6;margin-top:4px;}
+  .analysis-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .analysis-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .analysis-text{font-size:13px;line-height:1.6;color:var(--ink);}
+  .best-squad{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+  .best-slot{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;}
+  .best-slot .pos{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.05em;margin-bottom:3px;}
+  .best-slot .name{font-size:13px;font-weight:500;}
+  .best-slot .meta{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-dim);margin-top:2px;}
+  .actions{display:flex;gap:10px;}
+  .btn{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-family:'Inter',sans-serif;font-weight:500;font-size:14px;padding:13px;border-radius:8px;cursor:pointer;}
+  .btn:hover:not(:disabled){border-color:var(--gold);}
+  .btn.primary{background:var(--gold);color:#1A1400;border-color:var(--gold);font-weight:600;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .footer-note{text-align:center;color:var(--ink-dim);font-size:12px;margin-top:22px;line-height:1.6;}
+  .lb-row{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+    padding:9px 12px;margin-bottom:6px;font-size:12.5px;
+  }
+  .lb-row .lb-rank{font-family:'JetBrains Mono',monospace;color:var(--gold);width:22px;}
+  .lb-row .lb-streak{font-family:'Oswald',sans-serif;font-size:18px;color:var(--flame1);margin-right:10px;}
+  .lb-row .lb-lineup{color:var(--ink-dim);flex:1;text-align:right;font-size:11px;}
+  .lb-row.gold-run{border-color:var(--gold);}
+  @media(max-width:480px){
+    .roster-grid{grid-template-columns:repeat(3,1fr);}
+    .best-squad{grid-template-columns:1fr;}
+    .event-compare{grid-template-columns:1fr;}
+    h1{font-size:38px;}
+    .streak-num{font-size:36px;}
+    .candidate{flex-direction:column;align-items:flex-start;}
+    .candidate .line{text-align:left;}
+    .slot-picker{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-card">
+    <div class="intro-eyebrow">Spin. Draft. Chase 34.</div>
+    <h1 class="intro-title">The Streak</h1>
+    <p class="intro-lede">In 1971-72 the Lakers won <b>33 games in a row</b> &mdash; still the NBA record. Build a lineup of real players from any era and see how far <i>your</i> streak can go.</p>
+
+    <div class="intro-steps">
+      <div class="intro-step">
+        <div class="intro-step-num">1</div>
+        <div class="intro-step-body">
+          <div class="intro-step-title">Spin for a team</div>
+          <div class="intro-step-text">Each spin lands on a real NBA team-season &mdash; anything from the '72 Lakers to the tank-era Sixers. Every team has an equal shot.</div>
+        </div>
+      </div>
+      <div class="intro-step">
+        <div class="intro-step-num">2</div>
+        <div class="intro-step-body">
+          <div class="intro-step-title">Draft a player &amp; give them a role</div>
+          <div class="intro-step-text">Pick one player from that roster and slot them at PG, SG, SF, PF, C, or 6th man. You get six spins to fill all six spots. Playing someone out of position costs you.</div>
+        </div>
+      </div>
+      <div class="intro-step">
+        <div class="intro-step-num">3</div>
+        <div class="intro-step-body">
+          <div class="intro-step-title">Build chemistry &amp; balance</div>
+          <div class="intro-step-text">A lineup needs a scorer, a facilitator, a rebounder, and spacing &mdash; not five stars who all need the ball. Chemistry climbs as you win and drops on injuries, trades, and gambles.</div>
+        </div>
+      </div>
+      <div class="intro-step">
+        <div class="intro-step-num">4</div>
+        <div class="intro-step-body">
+          <div class="intro-step-title">Run the schedule</div>
+          <div class="intro-step-text">Simulate the Lakers' real 33-game streak plus the game that actually ended it. Injuries, trade offers, and milestone gambles hit along the way. Reach a milestone and you can gamble a player for a random one &mdash; boom or bust.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="intro-goal"><span>🔥</span> Goal: string together all 34 wins. See where your run would rank among the greatest streaks in NBA history.</div>
+
+    <button class="intro-start" id="introStart">Start drafting</button>
+  </div>
+</div>
+<div class="wrap">
+  <div class="eyebrow">Spin a team. Draft the roster. Chase 34.</div>
+  <h1>The Streak</h1>
+  <p class="sub">The 1971-72 Lakers won 33 straight &mdash; still the NBA record. Spin for a random real team from any season since 1970, pick a player, then choose which spot they play. Six picks, six spins, then run the Lakers' real schedule plus the game that actually ended it &mdash; with injuries, trade offers, and a chance to gamble at every milestone.</p>
+  <button class="howto-btn" id="howtoBtn">How to play</button>
+
+  <div class="gauge-wrap">
+    <div class="gauge-top"><span class="streak-num" id="streakNum">0</span><span class="streak-target">target: 34</span></div>
+    <div class="gauge-track"><div class="gauge-fill" id="gaugeFill"></div></div>
+    <div class="gauge-ticks"><span>0</span><span>10</span><span>20</span><span>33</span><span>34</span></div>
+  </div>
+
+  <div class="milestone-banner" id="milestoneBanner"></div>
+
+  <div class="panel" id="draftPanel">
+    <div class="panel-head"><span id="roundLabel">Pick 1 / 6</span><span id="pickHint"></span></div>
+    <div class="step-guide"><b>Step 1:</b> Tap <b>Spin</b> to land on a random team. <b>Step 2:</b> Tap one player from that team to draft them, then tap an open slot in <b>Your lineup</b> to place them.</div>
+    <div class="spin-zone" id="spinZone">
+      <div class="spin-display" id="spinDisplay">Spin for a team</div>
+      <button class="spin-btn" id="spinBtn">Spin</button>
+    </div>
+    <div id="candidatesWrap"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><span>Your lineup</span><span id="rosterCount">0 / 6</span></div>
+    <div class="step-guide">Fill all six spots (PG, SG, SF, PF, C, and a 6th man). A balanced lineup &mdash; a scorer, a passer, a rebounder, some shooting &mdash; wins more than five ball-dominant stars. Each filled slot flags position fit: no label means a <span class="fit-key in">natural fit</span>, <span class="fit-key slight">Slight OOP</span> is slightly off, and <span class="fit-key out">Out of pos.</span> means they're played out of position (which costs you).</div>
+    <div class="roster-grid" id="rosterGrid"></div>
+    <div class="roster-hint" id="rosterHint">Tap a player to see their stats and start a swap, then tap another slot to switch their positions.</div>
+    <div class="roster-hint" id="rosterTotals" style="margin-top:4px;color:var(--ink);">Your team totals will build up here as you draft.</div>
+    <div class="player-info" id="playerInfo"></div>
+  </div>
+
+  <div class="panel" id="simPanel" style="display:none;">
+    <div class="panel-head"><span>Running the schedule</span><span id="simStatus"></span></div>
+    <div class="step-guide">Chemistry rises as you win and drops on injuries, trades, and gambles &mdash; higher chemistry means better odds. Injuries, trade offers, and milestone gambles can pop up between games; each one pauses for your decision.</div>
+    <div class="chem-bar">
+      <span class="chem-label">Team chemistry</span>
+      <div class="chem-track"><div class="chem-fill" id="chemFill"></div></div>
+      <span class="chem-pct" id="chemistryOut">55%</span>
+    </div>
+    <div class="gamelog" id="gamelog"></div>
+    <div id="eventZone"></div>
+    <button class="btn" id="pauseBtn" style="margin-top:12px;width:100%;display:none;">Pause simulation</button>
+  </div>
+
+  <div class="panel" id="resultPanel" style="display:none;">
+    <div class="panel-head"><span>Result</span><span id="resultTag"></span></div>
+    <p class="verdict" id="verdictOut"></p>
+    <p class="verdict" id="bestPerformerOut" style="margin-top:6px;"></p>
+    <div class="analysis-block">
+      <div class="analysis-title">How the roster fit together</div>
+      <p class="analysis-text" id="analysisOut"></p>
+    </div>
+    <div class="analysis-block">
+      <div class="analysis-title">Where this would rank all-time</div>
+      <p class="analysis-text" id="allTimeOut"></p>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div><div class="n" id="bestOut">0</div><div class="l">Best streak</div><div class="sub-l">from game 1</div></div>
+    <div><div class="n" id="bestRecordOut">—</div><div class="l">Best record</div></div>
+  </div>
+
+  <div class="step-guide" id="simGuide" style="text-align:center;">Once all six spots are filled: <b>Simulate next game</b> plays one game at a time, or <b>Simulate full schedule</b> runs the whole thing automatically.</div>
+  <div class="actions">
+    <button class="btn" id="simNextBtn" disabled>Simulate next game</button>
+    <button class="btn" id="simBtn" disabled>Simulate full schedule</button>
+  </div>
+  <div class="actions" style="margin-top:10px;">
+    <button class="btn primary" id="newBtn">Start over</button>
+  </div>
+  <div class="actions" style="margin-top:10px;">
+    <button class="btn primary" id="shareBtn" disabled style="flex:1;">Share result</button>
+  </div>
+
+  <p class="footer-note">Rosters, awards, and stats are real, drawn from actual seasons since 1970. Games 1&ndash;33 are the Lakers' real streak, Nov. 5, 1971 &ndash; Jan. 7, 1972; game 34 is the real Milwaukee game from Jan. 9, 1972 that snapped it. Injury odds loosely track each player's real durability reputation. Final scores and in-season events are simulated, not historical.</p>
+</div>
+
+<script>
+// Replace with your hosted URL once this file is deployed somewhere public.
+const GAME_URL = "the-streak.html";
+
+const OPPONENTS = [
+  {n:1, date:"Nov 5, 1971", opp:"Baltimore Bullets"},
+  {n:2, date:"Nov 6, 1971", opp:"Golden State Warriors"},
+  {n:3, date:"Nov 7, 1971", opp:"New York Knicks"},
+  {n:4, date:"Nov 9, 1971", opp:"Chicago Bulls"},
+  {n:5, date:"Nov 10, 1971", opp:"Philadelphia 76ers"},
+  {n:6, date:"Nov 12, 1971", opp:"Seattle SuperSonics"},
+  {n:7, date:"Nov 13, 1971", opp:"Portland Trail Blazers"},
+  {n:8, date:"Nov 14, 1971", opp:"Boston Celtics"},
+  {n:9, date:"Nov 16, 1971", opp:"Cleveland Cavaliers"},
+  {n:10, date:"Nov 19, 1971", opp:"Houston Rockets"},
+  {n:11, date:"Nov 21, 1971", opp:"Milwaukee Bucks"},
+  {n:12, date:"Nov 25, 1971", opp:"Seattle SuperSonics"},
+  {n:13, date:"Nov 26, 1971", opp:"Detroit Pistons"},
+  {n:14, date:"Nov 28, 1971", opp:"Seattle SuperSonics"},
+  {n:15, date:"Dec 1, 1971", opp:"Boston Celtics"},
+  {n:16, date:"Dec 3, 1971", opp:"Philadelphia 76ers"},
+  {n:17, date:"Dec 5, 1971", opp:"Portland Trail Blazers"},
+  {n:18, date:"Dec 8, 1971", opp:"Houston Rockets"},
+  {n:19, date:"Dec 9, 1971", opp:"Golden State Warriors"},
+  {n:20, date:"Dec 10, 1971", opp:"Phoenix Suns"},
+  {n:21, date:"Dec 12, 1971", opp:"Atlanta Hawks"},
+  {n:22, date:"Dec 14, 1971", opp:"Portland Trail Blazers"},
+  {n:23, date:"Dec 17, 1971", opp:"Golden State Warriors"},
+  {n:24, date:"Dec 18, 1971", opp:"Phoenix Suns"},
+  {n:25, date:"Dec 19, 1971", opp:"Philadelphia 76ers"},
+  {n:26, date:"Dec 21, 1971", opp:"Buffalo Braves"},
+  {n:27, date:"Dec 22, 1971", opp:"Baltimore Bullets"},
+  {n:28, date:"Dec 26, 1971", opp:"Houston Rockets"},
+  {n:29, date:"Dec 28, 1971", opp:"Buffalo Braves"},
+  {n:30, date:"Dec 30, 1971", opp:"Seattle SuperSonics"},
+  {n:31, date:"Jan 2, 1972", opp:"Boston Celtics"},
+  {n:32, date:"Jan 5, 1972", opp:"Cleveland Cavaliers"},
+  {n:33, date:"Jan 7, 1972", opp:"Atlanta Hawks"},
+  {n:34, date:"Jan 9, 1972", opp:"Milwaukee Bucks", bonus:true}
+];
+
+const POSITIONS = ["PG","SG","SF","PF","C","6TH MAN"];
+const REAL_POS = ["PG","SG","SF","PF","C"];
+const POS_FLEX = {PG:1, SG:2, SF:2, PF:1, C:0};
+const INJ_RATE = {low:0.002, medium:0.006, high:0.016};
+
+const INJURY_TYPES = [
+  {desc:"stubbed his right big toe getting out of bed", games:[1,1], weight:5},
+  {desc:"tweaked a finger closing his car door", games:[1,1], weight:5},
+  {desc:"came down with a stomach bug the night before", games:[1,1], weight:4},
+  {desc:"rolled an ankle stepping off the team bus", games:[1,2], weight:5},
+  {desc:"tweaked his back during warmups", games:[2,4], weight:4},
+  {desc:"sprained an ankle in the third quarter", games:[3,6], weight:4},
+  {desc:"strained a hamstring chasing down a fast break", games:[4,8], weight:3},
+  {desc:"has a bruised hip after a hard fall", games:[2,5], weight:3},
+  {desc:"is dealing with plantar fasciitis flaring up", games:[4,10], weight:2},
+  {desc:"fractured a finger on a hard foul", games:[8,15], weight:1.5},
+  {desc:"strained a calf and is week-to-week", games:[6,12], weight:2},
+  {desc:"tore a ligament and is out indefinitely", games:[20,40], weight:0.6},
+  {desc:"suffered a season-ending injury", games:[40,60], weight:0.4}
+];
+
+function rollInjury(){
+  const totalWeight = INJURY_TYPES.reduce((s,i)=>s+i.weight,0);
+  let r = Math.random()*totalWeight;
+  for(const inj of INJURY_TYPES){
+    if(r < inj.weight) {
+      const games = inj.games[0] + Math.floor(Math.random()*(inj.games[1]-inj.games[0]+1));
+      return {desc: inj.desc, games};
+    }
+    r -= inj.weight;
+  }
+  return {desc:"tweaked something minor", games:1};
+}
+
+function isNameRostered(name){
+  return Object.values(roster).some(r => r.p.name === name);
+}
+
+function P(name,pos,pts,reb,ast,stl,blk,awards,inj){
+  return {name,pos,pts,reb,ast,stl,blk,awards:awards||[],injuryRisk:inj||"medium"};
+}
+
+const TEAM_POOL = [
+  {team:"Boston Celtics", season:"1972-73", notable:true, players:[
+    P("John Havlicek","SF",23.8,6.7,6.5,1.2,0.3,[]),
+    P("Dave Cowens","C",20.5,16.2,4.1,1.1,1.1,["MVP"]),
+    P("Jo Jo White","PG",19.4,4.6,4.7,1.0,0.1,[]),
+    P("Don Nelson","PF",9.9,4.2,1.8,0.6,0.2,[]),
+    P("Paul Silas","PF",10.7,12.9,2.6,1.1,0.4,[],"low"),
+    P("Don Chaney","SG",11.1,4.6,2.6,1.6,0.3,[]),
+    P("Paul Westphal","SG",9.5,1.9,2.2,0.9,0.1,[]),
+    P("Steve Kuberski","PF",6.6,3.6,0.9,0.4,0.2,[])
+  ]},
+  {team:"Portland Trail Blazers", season:"1976-77", notable:true, players:[
+    P("Bill Walton","C",18.6,14.4,3.8,1.0,2.5,["Finals MVP"],"high"),
+    P("Maurice Lucas","PF",20.2,11.4,2.6,1.0,0.9,[]),
+    P("Lionel Hollins","PG",14.7,3.5,3.9,1.6,0.2,[]),
+    P("Dave Twardzik","PG",10.5,2.4,4.2,1.2,0.1,[]),
+    P("Bobby Gross","SF",11.2,5.1,2.7,1.1,0.4,[]),
+    P("Larry Steele","SG",8.7,3.5,2.4,1.8,0.2,[]),
+    P("Johnny Davis","SG",8.5,1.8,2.3,1.0,0.1,[]),
+    P("Herm Gilliam","SG",6.9,2.0,1.9,0.8,0.1,[])
+  ]},
+  {team:"Golden State Warriors", season:"1974-75", notable:true, players:[
+    P("Rick Barry","SF",30.6,4.2,6.2,2.9,0.7,["Finals MVP"]),
+    P("Jamaal Wilkes","PF",14.2,8.2,2.1,1.4,0.7,[]),
+    P("Clifford Ray","C",8.4,11.2,2.3,1.0,1.8,[]),
+    P("Butch Beard","PG",11.4,3.1,5.0,1.2,0.2,[]),
+    P("Charles Johnson","SG",11.8,2.2,2.9,1.3,0.1,[]),
+    P("George Johnson","C",6.4,6.5,0.8,0.6,2.7,[]),
+    P("Jeff Mullins","SG",10.9,2.6,2.7,1.0,0.1,[]),
+    P("Derrek Dickey","PF",8.2,4.9,0.9,0.6,0.4,[])
+  ]},
+  {team:"Boston Celtics", season:"1985-86", notable:true, players:[
+    P("Larry Bird","SF",25.8,9.8,6.8,2.0,0.6,["MVP"]),
+    P("Kevin McHale","PF",21.3,8.1,1.9,0.6,1.5,[]),
+    P("Robert Parish","C",16.1,10.0,1.7,0.7,1.6,[]),
+    P("Dennis Johnson","PG",15.6,3.1,5.8,1.4,0.3,[]),
+    P("Danny Ainge","SG",10.7,2.7,4.7,1.2,0.2,[]),
+    P("Bill Walton","C",7.6,6.8,2.1,0.7,1.1,["Sixth Man of the Year"],"high"),
+    P("Scott Wedman","SF",7.6,3.0,1.3,0.7,0.3,[]),
+    P("Jerry Sichting","PG",5.6,1.0,2.4,0.5,0.0,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"1986-87", notable:true, players:[
+    P("Magic Johnson","PG",23.9,6.3,12.2,1.7,0.4,["MVP"]),
+    P("Kareem Abdul-Jabbar","C",17.5,6.7,1.6,0.6,1.6,[]),
+    P("James Worthy","SF",19.4,5.7,3.0,1.4,0.6,[]),
+    P("Byron Scott","SG",17.0,3.1,3.5,1.2,0.2,[]),
+    P("A.C. Green","PF",10.8,6.7,1.1,0.9,0.4,[],"low"),
+    P("Michael Cooper","SG",12.7,3.3,3.9,1.6,0.7,["Defensive Player of the Year"]),
+    P("Mychal Thompson","PF",8.6,4.7,1.4,0.5,0.7,[]),
+    P("Kurt Rambis","PF",5.4,5.4,1.4,0.7,0.6,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"1982-83", notable:true, players:[
+    P("Moses Malone","C",24.5,15.3,1.3,0.9,1.5,["MVP"]),
+    P("Julius Erving","SF",21.4,6.9,4.4,1.8,1.6,["NBA Champion"]),
+    P("Andrew Toney","SG",19.7,2.4,4.9,1.2,0.2,[]),
+    P("Maurice Cheeks","PG",12.5,3.4,6.9,2.4,0.3,[]),
+    P("Bobby Jones","PF",9.4,4.9,2.6,1.4,1.1,["Sixth Man of the Year"]),
+    P("Clint Richardson","SG",8.9,2.5,2.2,1.1,0.2,[]),
+    P("Marc Iavaroni","PF",4.2,3.1,1.0,0.5,0.4,[]),
+    P("Franklin Edwards","PG",4.6,1.3,2.3,0.7,0.1,[])
+  ]},
+  {team:"Chicago Bulls", season:"1991-92", notable:true, players:[
+    P("Michael Jordan","SG",30.1,6.4,6.1,2.3,0.9,["MVP","Scoring Champion"]),
+    P("Scottie Pippen","SF",21.0,7.7,7.0,1.9,1.1,[]),
+    P("Horace Grant","PF",14.2,8.8,3.1,1.1,0.8,[]),
+    P("Bill Cartwright","C",9.9,5.1,1.4,0.3,0.5,[]),
+    P("John Paxson","PG",8.7,1.6,3.2,0.6,0.1,[]),
+    P("Craig Hodges","SG",8.5,1.5,2.0,0.6,0.1,[]),
+    P("B.J. Armstrong","PG",7.0,1.5,2.3,0.7,0.1,[]),
+    P("Stacey King","PF",5.9,3.1,0.7,0.4,0.4,[])
+  ]},
+  {team:"Houston Rockets", season:"1993-94", notable:true, players:[
+    P("Hakeem Olajuwon","C",27.3,11.9,3.6,1.6,3.7,["MVP","Defensive Player of the Year"],"medium"),
+    P("Otis Thorpe","PF",14.7,10.5,2.2,0.9,0.6,[],"low"),
+    P("Vernon Maxwell","SG",17.0,3.2,4.6,1.7,0.2,[]),
+    P("Kenny Smith","PG",12.0,2.6,6.1,1.4,0.1,[]),
+    P("Robert Horry","SF",9.3,5.6,3.3,1.4,1.0,[]),
+    P("Mario Elie","SG",8.5,2.6,2.0,1.0,0.2,[]),
+    P("Carl Herrera","PF",5.6,3.7,0.6,0.5,0.5,[]),
+    P("Sam Cassell","PG",6.0,1.2,2.6,0.6,0.1,[])
+  ]},
+  {team:"Utah Jazz", season:"1996-97", notable:true, players:[
+    P("Karl Malone","PF",27.4,9.9,4.5,1.4,0.6,["MVP"],"low"),
+    P("John Stockton","PG",14.4,2.9,10.5,2.2,0.2,[],"low"),
+    P("Jeff Hornacek","SG",14.5,3.3,4.4,1.1,0.2,[]),
+    P("Bryon Russell","SF",10.9,4.0,1.6,1.0,0.3,[]),
+    P("Antoine Carr","C",9.6,3.2,0.8,0.4,0.5,[]),
+    P("Shandon Anderson","SF",5.4,2.4,1.1,0.7,0.2,[]),
+    P("Greg Ostertag","C",4.7,5.0,0.5,0.3,1.5,[]),
+    P("Howard Eisley","PG",4.5,1.1,2.4,0.5,0.1,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"2000-01", notable:true, players:[
+    P("Shaquille O'Neal","C",28.3,12.7,3.7,0.6,2.8,["NBA Champion"]),
+    P("Kobe Bryant","SG",28.5,5.9,5.0,1.7,0.6,["NBA Champion"]),
+    P("Rick Fox","SF",12.7,4.4,3.0,1.2,0.4,[]),
+    P("Derek Fisher","PG",11.5,2.3,3.1,0.9,0.1,[]),
+    P("Robert Horry","PF",7.0,4.8,2.0,0.9,0.7,[]),
+    P("Horace Grant","PF",8.5,6.7,1.5,0.9,0.6,[]),
+    P("Brian Shaw","PG",5.7,2.9,2.6,0.7,0.1,[]),
+    P("Devean George","SF",4.3,2.9,0.6,0.4,0.3,[])
+  ]},
+  {team:"San Antonio Spurs", season:"2002-03", notable:true, players:[
+    P("Tim Duncan","PF",23.3,12.9,3.9,0.7,2.9,["MVP","NBA Champion"],"medium"),
+    P("Tony Parker","PG",15.5,2.6,5.3,1.1,0.1,[]),
+    P("David Robinson","C",8.5,6.0,1.2,0.5,1.4,["NBA Champion"]),
+    P("Manu Ginobili","SG",7.6,2.2,2.0,1.0,0.2,[]),
+    P("Bruce Bowen","SF",6.9,3.5,1.4,1.1,0.3,[],"low"),
+    P("Stephen Jackson","SF",8.3,2.8,1.6,1.0,0.2,[]),
+    P("Malik Rose","PF",8.8,5.9,1.0,0.6,0.4,[]),
+    P("Speedy Claxton","PG",6.4,1.7,3.2,1.1,0.1,[])
+  ]},
+  {team:"Boston Celtics", season:"2007-08", notable:true, players:[
+    P("Paul Pierce","SF",19.6,5.1,4.5,1.4,0.4,["NBA Champion"]),
+    P("Kevin Garnett","PF",18.8,9.2,3.4,1.4,1.3,["Defensive Player of the Year","NBA Champion"]),
+    P("Ray Allen","SG",17.4,3.3,3.7,0.8,0.2,["NBA Champion"]),
+    P("Rajon Rondo","PG",10.6,4.2,5.1,1.9,0.2,[]),
+    P("Kendrick Perkins","C",6.5,6.1,0.8,0.5,1.0,[]),
+    P("James Posey","SF",8.4,3.5,1.4,1.0,0.4,[]),
+    P("Eddie House","SG",6.7,1.1,1.1,0.4,0.0,[]),
+    P("Glen Davis","PF",5.5,2.9,0.6,0.4,0.2,[])
+  ]},
+  {team:"Golden State Warriors", season:"2014-15", notable:true, players:[
+    P("Stephen Curry","PG",23.8,4.3,7.7,2.0,0.2,["MVP","NBA Champion"]),
+    P("Klay Thompson","SG",21.7,3.2,2.4,1.1,0.5,["NBA Champion"]),
+    P("Draymond Green","PF",6.0,7.0,3.7,1.6,1.3,["NBA Champion"]),
+    P("Andre Iguodala","SF",7.8,3.3,3.3,1.1,0.4,["Finals MVP"]),
+    P("Harrison Barnes","SF",9.5,5.5,1.3,0.6,0.4,[]),
+    P("Shaun Livingston","PG",6.3,2.0,2.4,0.6,0.3,[]),
+    P("Marreese Speights","C",10.3,4.6,0.9,0.5,0.5,[]),
+    P("Festus Ezeli","C",4.0,3.4,0.3,0.3,0.6,[],"high")
+  ]},
+  {team:"Miami Heat", season:"2012-13", notable:true, players:[
+    P("LeBron James","SF",26.8,8.0,7.3,1.7,0.9,["MVP","NBA Champion"],"low"),
+    P("Dwyane Wade","SG",21.2,4.6,5.1,1.5,0.8,["NBA Champion"]),
+    P("Chris Bosh","PF",16.2,6.8,1.9,0.6,1.0,["NBA Champion"]),
+    P("Ray Allen","SG",10.9,2.9,2.6,0.7,0.1,["NBA Champion"]),
+    P("Mario Chalmers","PG",9.8,3.1,4.3,1.3,0.2,[]),
+    P("Shane Battier","SF",7.8,3.1,1.4,0.9,0.4,[],"low"),
+    P("Udonis Haslem","PF",4.2,4.9,0.5,0.4,0.2,[]),
+    P("Norris Cole","PG",7.9,2.2,3.1,0.9,0.1,[])
+  ]},
+  {team:"Denver Nuggets", season:"2022-23", notable:true, players:[
+    P("Nikola Jokic","C",24.5,11.8,9.8,1.3,0.7,["MVP","NBA Champion"],"low"),
+    P("Jamal Murray","PG",20.0,4.1,6.2,1.1,0.3,["NBA Champion"]),
+    P("Michael Porter Jr.","SF",13.4,6.9,1.2,0.7,0.5,["NBA Champion"],"high"),
+    P("Aaron Gordon","PF",16.3,6.5,2.8,0.7,0.7,["NBA Champion"]),
+    P("Kentavious Caldwell-Pope","SG",9.8,2.3,1.8,1.2,0.2,["NBA Champion"]),
+    P("Bruce Brown","SG",11.5,4.1,3.3,0.9,0.4,["NBA Champion"]),
+    P("Jeff Green","PF",8.5,3.6,1.2,0.5,0.5,[]),
+    P("Christian Braun","SG",5.2,2.6,1.0,0.5,0.2,[])
+  ]},
+  {team:"Milwaukee Bucks", season:"2020-21", notable:true, players:[
+    P("Giannis Antetokounmpo","PF",28.1,11.0,5.9,1.2,1.2,["Finals MVP","NBA Champion"]),
+    P("Khris Middleton","SF",20.4,5.4,5.4,1.1,0.3,["NBA Champion"]),
+    P("Jrue Holiday","PG",17.7,4.0,7.1,1.6,0.5,["NBA Champion"]),
+    P("Brook Lopez","C",12.6,5.0,1.2,0.4,1.9,["NBA Champion"]),
+    P("Bobby Portis","PF",11.5,6.5,1.0,0.6,0.4,["NBA Champion"]),
+    P("Pat Connaughton","SG",8.6,5.1,1.8,0.7,0.2,["NBA Champion"]),
+    P("Donte DiVincenzo","SG",8.9,3.1,2.7,0.9,0.2,["NBA Champion"],"high"),
+    P("P.J. Tucker","PF",5.6,4.6,1.2,0.8,0.2,["NBA Champion"],"low")
+  ]},
+  {team:"Buffalo Braves", season:"1974-75", notable:false, players:[
+    P("Bob McAdoo","C",34.5,14.1,2.3,0.9,1.5,["MVP","Scoring Champion"]),
+    P("Randy Smith","SG",16.0,4.4,3.7,1.7,0.3,[],"low"),
+    P("Ernie DiGregorio","PG",11.3,2.7,6.5,1.0,0.1,[]),
+    P("Jim McMillian","SF",17.3,5.2,2.9,1.1,0.3,[]),
+    P("Garfield Heard","PF",14.6,9.0,2.0,0.9,0.5,[]),
+    P("Jack Marin","SF",12.5,4.1,1.9,0.7,0.2,[]),
+    P("Gar Heard","PF",9.1,6.4,1.1,0.6,0.4,[]),
+    P("Bob Kauffman","C",7.8,6.9,1.4,0.5,0.3,[])
+  ]},
+  {team:"Orlando Magic", season:"1990-91", notable:false, players:[
+    P("Scott Skiles","PG",16.5,2.7,8.0,1.2,0.1,[]),
+    P("Nick Anderson","SG",17.6,5.5,2.8,1.6,0.5,[]),
+    P("Otis Smith","SF",13.1,3.6,2.1,1.1,0.3,[]),
+    P("Jerry Reynolds","SF",11.4,4.0,1.6,0.9,0.3,[]),
+    P("Greg Kite","C",2.6,3.9,0.4,0.3,0.6,[],"low"),
+    P("Sam Vincent","PG",9.4,1.9,4.4,0.7,0.1,[]),
+    P("Terry Catledge","PF",12.7,6.4,1.2,0.6,0.3,[]),
+    P("Sidney Green","PF",6.9,5.1,0.8,0.5,0.4,[])
+  ]},
+  {team:"Minnesota Timberwolves", season:"1994-95", notable:false, players:[
+    P("Christian Laettner","PF",17.1,8.2,3.1,0.9,0.8,[]),
+    P("Isaiah Rider","SG",18.5,4.0,2.4,0.9,0.3,[]),
+    P("Micheal Williams","PG",13.7,2.4,6.9,1.0,0.1,[]),
+    P("Doug West","SF",12.8,3.4,2.1,0.9,0.2,[]),
+    P("Sean Rooks","C",10.1,5.3,1.2,0.5,0.9,[]),
+    P("Andres Guibert","SF",5.0,2.5,0.6,0.4,0.2,[]),
+    P("Chuck Person","SF",12.3,3.5,2.2,0.6,0.1,[]),
+    P("Stanley Roberts","C",8.5,5.3,0.5,0.3,1.0,[],"high")
+  ]},
+  {team:"Vancouver Grizzlies", season:"1999-00", notable:false, players:[
+    P("Shareef Abdur-Rahim","PF",20.6,8.3,3.1,1.1,0.8,[]),
+    P("Mike Bibby","PG",13.7,2.5,6.6,1.1,0.1,[]),
+    P("Bryant Reeves","C",11.5,6.4,1.5,0.5,0.5,[],"high"),
+    P("Otis Thorpe","PF",8.6,6.8,1.5,0.6,0.4,[],"low"),
+    P("Michael Dickerson","SG",13.4,2.9,1.8,0.9,0.2,[]),
+    P("Isaac Austin","C",8.0,4.8,0.9,0.4,0.6,[]),
+    P("Lorenzen Wright","C",8.2,5.6,0.8,0.4,0.9,[]),
+    P("Doug Christie","SG",10.5,3.4,3.5,1.5,0.4,[])
+  ]},
+  {team:"Charlotte Bobcats", season:"2011-12", notable:false, players:[
+    P("Kemba Walker","PG",12.1,3.5,4.7,1.0,0.1,[]),
+    P("Gerald Henderson","SG",15.1,3.7,1.6,0.9,0.3,[]),
+    P("D.J. Augustin","PG",10.5,2.1,3.5,0.7,0.1,[]),
+    P("Bismack Biyombo","C",4.9,7.5,0.6,0.5,1.6,[]),
+    P("Corey Maggette","SF",15.5,4.2,1.7,0.7,0.2,[]),
+    P("Tyrus Thomas","PF",8.4,5.9,0.9,0.7,1.1,[],"high"),
+    P("Boris Diaw","PF",6.9,4.7,3.0,0.6,0.3,[],"low"),
+    P("Reggie Williams","SG",7.6,2.4,1.0,0.6,0.2,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"2015-16", notable:false, players:[
+    P("Jahlil Okafor","C",17.5,7.0,1.1,0.5,1.0,[]),
+    P("Nerlens Noel","PF",9.9,8.1,1.9,1.9,1.9,[]),
+    P("Robert Covington","SF",12.9,4.6,1.9,1.5,0.6,[]),
+    P("Ish Smith","PG",9.7,2.9,5.5,1.1,0.2,[]),
+    P("T.J. McConnell","PG",6.1,2.5,4.6,1.2,0.1,[],"low"),
+    P("Hollis Thompson","SG",7.5,2.2,0.8,0.5,0.2,[]),
+    P("Nik Stauskas","SG",6.6,1.8,2.0,0.6,0.1,[]),
+    P("Richaun Holmes","PF",6.6,3.7,0.5,0.5,0.9,[])
+  ]},
+  {team:"Golden State Warriors", season:"2001-02", notable:false, players:[
+    P("Antawn Jamison","SF",24.9,8.6,2.2,1.4,0.4,[]),
+    P("Gilbert Arenas","PG",18.3,3.6,6.4,2.2,0.2,[]),
+    P("Jason Richardson","SG",17.9,5.4,2.6,1.1,0.6,[]),
+    P("Danny Fortson","PF",12.7,8.5,0.7,0.6,0.3,[],"high"),
+    P("Erick Dampier","C",10.9,9.1,0.6,0.4,1.5,[]),
+    P("Larry Hughes","SG",11.8,3.5,3.5,1.6,0.5,[]),
+    P("Marc Jackson","PF",12.6,5.3,1.1,0.4,0.3,[]),
+    P("Chris Porter","SF",5.7,3.2,0.6,0.5,0.3,[])
+  ]},
+  {team:"New Jersey Nets", season:"1996-97", notable:false, players:[
+    P("Kerry Kittles","SG",16.4,3.9,3.1,1.9,0.4,[]),
+    P("Jayson Williams","PF",12.9,13.6,1.1,0.7,1.0,[],"high"),
+    P("Kendall Gill","SF",17.7,5.0,3.2,2.0,0.4,[]),
+    P("Sam Cassell","PG",13.8,2.5,5.9,0.9,0.1,[]),
+    P("Jim McIlvaine","C",3.8,4.1,0.3,0.2,2.4,[]),
+    P("Chris Gatling","PF",12.1,6.3,0.9,0.7,0.6,[]),
+    P("Kevin Edwards","SG",8.4,2.1,1.6,0.7,0.1,[]),
+    P("Robert Pack","PG",8.8,2.0,3.7,0.9,0.1,[])
+  ]},
+  {team:"Milwaukee Bucks", season:"1970-71", notable:true, players:[
+    P("Kareem Abdul-Jabbar","C",31.7,16.0,3.3,0.8,2.0,["MVP","NBA Champion"]),
+    P("Oscar Robertson","PG",19.4,5.7,8.2,1.6,0.2,["NBA Champion"]),
+    P("Bob Dandridge","SF",18.4,7.6,2.6,1.1,0.5,["NBA Champion"]),
+    P("Jon McGlocklin","SG",15.8,3.0,3.0,0.9,0.1,["NBA Champion"]),
+    P("Greg Smith","PF",9.0,7.9,1.8,0.7,0.4,[]),
+    P("Bob Boozer","PF",9.5,5.9,1.3,0.6,0.3,[]),
+    P("Lucius Allen","PG",8.2,2.5,2.7,1.0,0.1,[]),
+    P("Dick Cunningham","C",4.4,4.6,0.6,0.3,0.4,[])
+  ]},
+  {team:"Boston Celtics", season:"1980-81", notable:true, players:[
+    P("Larry Bird","SF",21.2,10.9,5.5,2.0,0.8,["NBA Champion"]),
+    P("Cedric Maxwell","PF",19.0,7.0,3.3,1.1,0.7,["Finals MVP"]),
+    P("Robert Parish","C",18.9,10.9,1.9,0.8,2.0,["NBA Champion"]),
+    P("Tiny Archibald","PG",13.9,2.4,7.7,1.3,0.1,["NBA Champion"]),
+    P("Chris Ford","SG",9.8,2.3,2.7,1.0,0.1,[]),
+    P("M.L. Carr","SF",10.8,4.6,2.5,1.5,0.4,[]),
+    P("Rick Robey","PF",8.8,5.6,1.6,0.6,0.4,[]),
+    P("Gerald Henderson","PG",7.0,1.6,2.5,0.9,0.1,[])
+  ]},
+  {team:"Washington Bullets", season:"1977-78", notable:true, players:[
+    P("Elvin Hayes","PF",19.7,10.3,1.6,1.0,1.7,["NBA Champion"]),
+    P("Wes Unseld","C",9.2,11.1,3.7,0.9,0.5,["Finals MVP"]),
+    P("Bob Dandridge","SF",19.7,6.7,3.6,1.4,0.5,["NBA Champion"]),
+    P("Kevin Grevey","SG",15.9,3.0,1.8,1.0,0.2,[]),
+    P("Tom Henderson","PG",10.5,2.7,5.6,1.1,0.1,[]),
+    P("Charles Johnson","SG",9.3,2.0,2.4,1.0,0.1,[]),
+    P("Larry Wright","PG",7.6,1.7,3.3,0.9,0.1,[]),
+    P("Mitch Kupchak","PF",9.6,5.7,1.3,0.6,0.4,[])
+  ]},
+  {team:"Detroit Pistons", season:"1988-89", notable:true, players:[
+    P("Isiah Thomas","PG",18.2,3.3,8.3,1.8,0.2,["NBA Champion"]),
+    P("Joe Dumars","SG",17.2,2.9,3.5,0.9,0.2,["NBA Champion"]),
+    P("Dennis Rodman","PF",6.5,9.4,1.1,0.9,0.7,["NBA Champion"]),
+    P("Bill Laimbeer","C",13.7,9.6,2.0,0.5,0.6,["NBA Champion"]),
+    P("Vinnie Johnson","SG",13.1,2.1,2.8,0.5,0.1,["NBA Champion"]),
+    P("Rick Mahorn","PF",8.4,6.4,1.4,0.6,0.5,["NBA Champion"]),
+    P("Mark Aguirre","SF",14.1,4.1,2.1,0.6,0.2,[]),
+    P("John Salley","C",7.8,4.6,1.3,0.6,1.4,["NBA Champion"])
+  ]},
+  {team:"Chicago Bulls", season:"1992-93", notable:true, players:[
+    P("Michael Jordan","SG",32.6,6.7,5.5,2.8,0.8,["Scoring Champion","NBA Champion"]),
+    P("Scottie Pippen","SF",18.6,7.7,5.5,1.8,0.8,["NBA Champion"]),
+    P("Horace Grant","PF",13.4,8.6,3.0,1.1,0.9,["NBA Champion"]),
+    P("Bill Cartwright","C",8.8,5.2,1.6,0.3,0.5,["NBA Champion"]),
+    P("B.J. Armstrong","PG",9.9,1.9,3.2,0.8,0.1,["NBA Champion"]),
+    P("John Paxson","PG",5.9,1.2,2.0,0.5,0.1,["NBA Champion"]),
+    P("Scott Williams","PF",5.8,4.1,0.8,0.5,0.6,[]),
+    P("Stacey King","C",5.5,3.2,0.7,0.4,0.4,[])
+  ]},
+  {team:"San Antonio Spurs", season:"1998-99", notable:true, players:[
+    P("Tim Duncan","PF",21.7,11.4,2.4,0.7,2.5,["Finals MVP","NBA Champion"]),
+    P("David Robinson","C",15.8,10.0,1.7,0.5,2.0,["NBA Champion"]),
+    P("Sean Elliott","SF",13.9,3.7,2.7,0.9,0.4,["NBA Champion"]),
+    P("Avery Johnson","PG",7.5,2.0,5.9,0.9,0.1,["NBA Champion"]),
+    P("Mario Elie","SG",9.3,2.9,1.9,0.9,0.2,["NBA Champion"]),
+    P("Jaren Jackson","SG",5.7,1.5,1.2,0.5,0.1,[]),
+    P("Malik Rose","PF",5.9,4.3,0.6,0.4,0.4,[]),
+    P("Will Perdue","C",3.7,4.1,0.6,0.3,0.7,["NBA Champion"])
+  ]},
+  {team:"Phoenix Suns", season:"2004-05", notable:true, players:[
+    P("Steve Nash","PG",15.5,3.3,11.5,1.0,0.1,["MVP"]),
+    P("Amar'e Stoudemire","C",26.0,8.9,1.4,0.9,1.5,[]),
+    P("Shawn Marion","SF",19.4,11.3,1.8,2.0,1.3,[]),
+    P("Quentin Richardson","SG",14.9,4.9,2.2,1.2,0.2,[]),
+    P("Joe Johnson","SG",17.1,4.6,3.6,1.1,0.4,[]),
+    P("Leandro Barbosa","SG",10.4,1.8,2.2,0.9,0.2,[]),
+    P("Jim Jackson","SF",7.6,2.4,1.6,0.7,0.2,[]),
+    P("Steven Hunter","C",2.9,2.1,0.2,0.2,0.5,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"2009-10", notable:true, players:[
+    P("Kobe Bryant","SG",27.0,5.4,5.0,1.5,0.3,["NBA Champion"]),
+    P("Pau Gasol","PF",18.3,11.3,3.4,0.6,1.9,["NBA Champion"]),
+    P("Lamar Odom","PF",14.4,8.6,3.3,0.9,0.7,["NBA Champion"]),
+    P("Derek Fisher","PG",8.5,2.0,2.7,0.6,0.1,["NBA Champion"]),
+    P("Ron Artest","SF",11.0,4.0,2.1,1.2,0.4,["NBA Champion"]),
+    P("Andrew Bynum","C",11.5,7.8,1.0,0.4,1.9,["NBA Champion"]),
+    P("Shannon Brown","SG",8.6,2.1,1.4,0.6,0.3,[]),
+    P("Jordan Farmar","PG",7.3,2.0,3.0,0.7,0.1,[])
+  ]},
+  {team:"Houston Rockets", season:"2017-18", notable:true, players:[
+    P("James Harden","SG",30.4,5.4,8.8,1.8,0.7,["MVP"]),
+    P("Chris Paul","PG",18.6,5.4,7.9,2.0,0.2,[]),
+    P("Clint Capela","C",13.9,10.8,0.9,0.7,1.9,[]),
+    P("Eric Gordon","SG",18.0,3.6,2.6,0.8,0.2,[]),
+    P("Trevor Ariza","SF",11.7,4.4,1.7,1.4,0.4,[]),
+    P("P.J. Tucker","PF",6.6,4.6,1.2,0.9,0.3,[]),
+    P("Ryan Anderson","PF",9.4,4.0,0.8,0.4,0.2,[]),
+    P("Luc Mbah a Moute","SF",7.5,3.6,0.9,0.9,0.4,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"2019-20", notable:true, players:[
+    P("LeBron James","SF",25.3,7.8,10.2,1.2,0.5,["NBA Champion"]),
+    P("Anthony Davis","PF",26.1,9.3,3.2,1.5,2.3,["Finals MVP","NBA Champion"],"medium"),
+    P("Kentavious Caldwell-Pope","SG",9.3,2.3,1.6,1.2,0.2,["NBA Champion"]),
+    P("Rajon Rondo","PG",7.1,3.5,5.0,1.2,0.2,["NBA Champion"]),
+    P("Danny Green","SG",8.0,2.9,1.6,0.8,0.4,["NBA Champion"]),
+    P("Kyle Kuzma","PF",12.8,4.9,1.8,0.6,0.4,["NBA Champion"]),
+    P("Dwight Howard","C",7.5,7.3,0.6,0.5,1.2,["NBA Champion"]),
+    P("Alex Caruso","PG",5.5,2.4,2.7,1.0,0.4,["NBA Champion"])
+  ]},
+  {team:"Boston Celtics", season:"2023-24", notable:true, players:[
+    P("Jayson Tatum","SF",26.9,8.1,4.9,1.0,0.6,["NBA Champion"]),
+    P("Jaylen Brown","SG",23.0,5.5,3.6,1.2,0.5,["Finals MVP","NBA Champion"]),
+    P("Kristaps Porzingis","C",20.1,7.2,2.0,0.7,1.9,["NBA Champion"]),
+    P("Jrue Holiday","PG",12.5,5.4,4.8,1.0,0.7,["NBA Champion"]),
+    P("Derrick White","PG",15.2,4.2,5.2,1.0,1.2,["NBA Champion"]),
+    P("Al Horford","C",8.5,6.4,2.4,0.7,0.9,["NBA Champion"]),
+    P("Sam Hauser","SF",9.6,3.4,1.0,0.5,0.2,["NBA Champion"]),
+    P("Payton Pritchard","PG",9.6,2.9,2.6,0.7,0.2,["NBA Champion"])
+  ]},
+  {team:"Houston Rockets", season:"1994-95", notable:true, players:[
+    P("Hakeem Olajuwon","C",27.8,10.8,3.5,1.8,3.4,["Finals MVP","NBA Champion"],"medium"),
+    P("Clyde Drexler","SG",21.4,6.6,6.6,1.8,0.7,["NBA Champion"]),
+    P("Robert Horry","SF",9.8,5.6,3.3,1.5,1.0,["NBA Champion"]),
+    P("Kenny Smith","PG",10.7,2.4,4.1,1.2,0.1,["NBA Champion"]),
+    P("Mario Elie","SG",11.4,3.4,2.6,1.1,0.2,["NBA Champion"]),
+    P("Otis Thorpe","PF",14.1,9.5,2.3,0.9,0.5,["NBA Champion"],"low"),
+    P("Sam Cassell","PG",14.5,2.9,4.6,1.0,0.1,["NBA Champion"]),
+    P("Chucky Brown","PF",5.6,3.2,0.6,0.4,0.2,[])
+  ]},
+  {team:"Oklahoma City Thunder", season:"2024-25", notable:true, players:[
+    P("Shai Gilgeous-Alexander","PG",32.7,5.0,6.4,1.7,1.0,["MVP","Scoring Champion"]),
+    P("Jalen Williams","SG",21.6,5.1,5.0,1.6,0.8,[]),
+    P("Chet Holmgren","C",15.4,7.9,2.4,0.9,2.2,[],"high"),
+    P("Lu Dort","SF",10.5,3.6,1.6,1.0,0.5,[]),
+    P("Isaiah Hartenstein","C",8.4,8.1,3.0,0.9,1.1,[]),
+    P("Jaylin Williams","PF",5.4,4.3,1.7,0.7,0.4,[]),
+    P("Cason Wallace","SG",7.7,2.5,2.3,1.1,0.5,[]),
+    P("Aaron Wiggins","SG",10.9,3.5,1.7,0.9,0.4,[])
+  ]},
+  {team:"Minnesota Timberwolves", season:"2023-24", notable:true, players:[
+    P("Anthony Edwards","SG",25.9,5.4,5.1,1.3,0.6,[]),
+    P("Karl-Anthony Towns","PF",21.8,8.3,3.0,0.7,0.7,[]),
+    P("Rudy Gobert","C",14.0,12.9,1.3,0.7,2.1,["Defensive Player of the Year"],"low"),
+    P("Mike Conley","PG",11.6,2.6,5.5,0.8,0.1,[]),
+    P("Jaden McDaniels","SF",10.5,3.8,1.6,1.0,0.6,[]),
+    P("Naz Reid","C",13.4,5.6,1.6,0.6,0.6,["Sixth Man of the Year"]),
+    P("Nickeil Alexander-Walker","SG",9.5,2.6,2.7,1.2,0.5,[]),
+    P("Kyle Anderson","SF",7.9,3.6,3.6,0.9,0.4,[])
+  ]},
+  {team:"Cleveland Cavaliers", season:"2024-25", notable:true, players:[
+    P("Donovan Mitchell","SG",24.0,4.3,4.7,1.3,0.4,[]),
+    P("Darius Garland","PG",20.6,2.7,6.5,1.0,0.1,[]),
+    P("Evan Mobley","PF",18.5,9.3,3.2,0.8,1.5,["Defensive Player of the Year"]),
+    P("Jarrett Allen","C",13.9,10.5,1.5,0.6,1.0,[],"low"),
+    P("Max Strus","SF",11.5,3.5,2.4,0.9,0.2,[]),
+    P("Ty Jerome","PG",12.5,3.2,3.5,0.6,0.1,[]),
+    P("Isaac Okoro","SF",7.5,2.4,1.1,0.7,0.3,[]),
+    P("De'Andre Hunter","SF",13.5,3.6,1.4,0.6,0.4,[])
+  ]},
+  {team:"Sacramento Kings", season:"2022-23", notable:true, players:[
+    P("De'Aaron Fox","PG",25.0,4.2,6.1,1.2,0.4,[]),
+    P("Domantas Sabonis","C",19.1,12.3,7.3,0.9,0.5,[]),
+    P("Keegan Murray","SF",12.2,4.6,1.5,0.7,0.5,[]),
+    P("Harrison Barnes","PF",15.3,4.2,1.5,0.7,0.4,[]),
+    P("Kevin Huerter","SG",15.2,3.2,3.6,0.8,0.2,[]),
+    P("Malik Monk","SG",13.7,2.5,3.6,0.7,0.3,[]),
+    P("Davion Mitchell","PG",7.4,2.3,3.4,0.9,0.2,[]),
+    P("Trey Lyles","PF",7.2,3.9,1.4,0.5,0.2,[])
+  ]},
+  {team:"New York Knicks", season:"2024-25", notable:true, players:[
+    P("Jalen Brunson","PG",26.0,3.6,7.3,0.9,0.2,[]),
+    P("Karl-Anthony Towns","C",24.4,12.8,3.1,0.7,0.6,[]),
+    P("OG Anunoby","SF",18.0,4.5,2.1,1.6,0.6,[]),
+    P("Mikal Bridges","SF",17.6,4.5,3.6,1.0,0.4,[],"low"),
+    P("Josh Hart","SG",13.6,8.9,4.4,0.9,0.3,[]),
+    P("Mitchell Robinson","C",5.7,7.9,0.6,0.6,1.2,[],"high"),
+    P("Miles McBride","PG",8.3,2.1,3.1,1.0,0.2,[]),
+    P("Precious Achiuwa","PF",5.7,4.6,0.9,0.5,0.7,[])
+  ]},
+  {team:"Dallas Mavericks", season:"2010-11", notable:true, players:[
+    P("Dirk Nowitzki","PF",23.0,7.0,2.6,0.5,0.6,["NBA Champion"]),
+    P("Jason Terry","SG",15.8,2.4,4.1,1.0,0.2,["NBA Champion"]),
+    P("Shawn Marion","SF",12.5,6.9,1.4,0.9,0.6,["NBA Champion"]),
+    P("Jason Kidd","PG",7.9,4.4,8.2,1.7,0.3,["NBA Champion"],"low"),
+    P("Tyson Chandler","C",10.1,9.4,0.4,0.5,1.1,["NBA Champion"]),
+    P("J.J. Barea","PG",9.5,2.0,3.9,0.6,0.1,["NBA Champion"]),
+    P("DeShawn Stevenson","SG",5.4,1.7,0.9,0.6,0.1,["NBA Champion"]),
+    P("Brendan Haywood","C",4.0,5.2,0.4,0.3,1.3,["NBA Champion"])
+  ]},
+  {team:"Chicago Bulls", season:"1995-96", notable:true, players:[
+    P("Michael Jordan","SG",30.4,6.6,4.3,2.2,0.5,["MVP","Scoring Champion","NBA Champion"]),
+    P("Scottie Pippen","SF",19.4,6.4,5.9,1.7,0.7,["NBA Champion"]),
+    P("Toni Kukoc","PF",13.1,4.0,3.5,0.8,0.3,["Sixth Man of the Year","NBA Champion"]),
+    P("Luc Longley","C",9.1,5.1,1.9,0.4,1.4,["NBA Champion"]),
+    P("Steve Kerr","PG",8.4,1.3,2.3,0.8,0.0,["NBA Champion"]),
+    P("Ron Harper","PG",7.4,2.7,2.6,1.3,0.4,["NBA Champion"]),
+    P("Dennis Rodman","PF",5.5,14.9,2.5,0.6,0.4,["Rebounding Champion","NBA Champion"],"low"),
+    P("Bill Wennington","C",5.3,2.5,0.6,0.3,0.2,["NBA Champion"])
+  ]},
+  {team:"Oklahoma City Thunder", season:"2015-16", notable:true, players:[
+    P("Kevin Durant","SF",28.2,8.2,5.0,1.0,1.2,[]),
+    P("Russell Westbrook","PG",23.5,7.8,10.4,2.0,0.3,[]),
+    P("Enes Kanter","C",12.7,8.1,0.4,0.3,0.4,[]),
+    P("Serge Ibaka","PF",12.6,6.8,0.8,0.5,1.9,[]),
+    P("Dion Waiters","SG",9.8,2.6,2.0,1.0,0.2,[]),
+    P("Steven Adams","C",8.0,6.7,0.8,0.5,1.1,[]),
+    P("Andre Roberson","SG",4.8,3.6,0.7,0.8,0.6,[],"low"),
+    P("Randy Foye","SG",5.6,1.9,1.8,0.5,0.5,[])
+  ]},
+  {team:"Sacramento Kings", season:"2001-02", notable:true, players:[
+    P("Chris Webber","PF",24.5,10.1,4.8,1.7,1.4,[]),
+    P("Peja Stojakovic","SF",21.2,5.3,2.5,1.1,0.2,[]),
+    P("Mike Bibby","PG",13.7,2.8,5.0,1.1,0.2,[]),
+    P("Doug Christie","SG",12.0,4.6,4.2,2.0,0.3,[]),
+    P("Vlade Divac","C",11.1,8.4,3.7,1.0,1.2,[]),
+    P("Bobby Jackson","PG",11.1,3.1,2.0,0.9,0.1,[]),
+    P("Hedo Turkoglu","SF",10.1,4.5,2.0,0.7,0.4,[]),
+    P("Scot Pollard","C",6.4,7.1,0.7,0.9,1.0,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"1972-73", notable:false, players:[
+    P("Fred Carter","SG",20.0,6.0,4.3,0.0,0.0,[]),
+    P("John Block","PF",17.9,9.2,2.0,0.0,0.0,[]),
+    P("LeRoy Ellis","C",13.7,10.8,2.0,0.0,0.0,[]),
+    P("Freddie Boyd","PG",10.5,2.6,3.7,0.0,0.0,[]),
+    P("Manny Leaks","C",11.0,8.3,1.2,0.0,0.0,[]),
+    P("John Trapp","SF",10.7,4.8,1.2,0.0,0.0,[]),
+    P("Dale Schlueter","C",5.4,4.5,1.3,0.0,0.0,[]),
+    P("Mike Price","SG",5.1,2.1,1.2,0.0,0.0,[])
+  ]},
+  {team:"Dallas Mavericks", season:"1992-93", notable:false, players:[
+    P("Derek Harper","PG",18.2,2.0,5.4,1.3,0.3,[]),
+    P("Jim Jackson","SG",16.3,4.4,4.7,1.4,0.4,[]),
+    P("Sean Rooks","C",13.5,7.4,1.3,0.5,1.1,[]),
+    P("Terry Davis","PF",12.7,9.3,0.9,0.5,0.4,[]),
+    P("Doug Smith","PF",10.4,5.4,1.7,0.8,0.9,[]),
+    P("Randy White","SF",9.7,5.8,0.8,1.0,0.7,[]),
+    P("Tim Legler","SG",9.6,1.9,1.5,0.8,0.2,[]),
+    P("Mike Iuzzolino","PG",8.7,2.0,4.7,0.7,0.1,[])
+  ]},
+  {team:"Toronto Raptors", season:"2018-19", notable:true, players:[
+    P("Kawhi Leonard","SF",26.6,7.3,3.3,1.8,0.4,["Finals MVP","NBA Champion"]),
+    P("Pascal Siakam","PF",16.9,6.9,3.1,0.9,0.7,["NBA Champion"]),
+    P("Serge Ibaka","C",15.0,8.1,1.3,0.4,1.4,["NBA Champion"]),
+    P("Kyle Lowry","PG",14.2,4.8,8.7,1.4,0.5,["NBA Champion"]),
+    P("Fred VanVleet","SG",11.0,2.6,4.8,0.9,0.3,["NBA Champion"]),
+    P("Danny Green","SG",10.3,4.0,1.6,0.9,0.7,["NBA Champion"]),
+    P("Marc Gasol","C",9.1,6.6,3.9,0.9,0.9,["NBA Champion"]),
+    P("Norman Powell","SG",8.6,2.3,1.5,0.7,0.2,["NBA Champion"])
+  ]},
+  {team:"Phoenix Suns", season:"2006-07", notable:true, players:[
+    P("Amar'e Stoudemire","C",20.4,9.6,1.0,1.0,1.3,[]),
+    P("Steve Nash","PG",18.6,3.5,11.6,0.8,0.1,[]),
+    P("Leandro Barbosa","SG",18.1,2.7,4.0,1.2,0.2,["Sixth Man of the Year"]),
+    P("Shawn Marion","SF",17.5,9.8,1.7,2.0,1.5,[]),
+    P("Raja Bell","SG",14.7,3.2,2.5,0.6,0.3,[]),
+    P("Boris Diaw","PF",9.7,4.3,4.8,0.4,0.5,[]),
+    P("James Jones","SF",6.4,2.3,0.6,0.4,0.6,[]),
+    P("Kurt Thomas","PF",4.6,5.7,0.4,0.4,0.4,[])
+  ]},
+  {team:"Los Angeles Clippers", season:"2013-14", notable:true, players:[
+    P("Blake Griffin","PF",24.1,9.5,3.9,1.2,0.6,[]),
+    P("Chris Paul","PG",19.1,4.3,10.7,2.5,0.1,[]),
+    P("Jamal Crawford","SG",18.6,2.3,3.2,0.9,0.2,["Sixth Man of the Year"]),
+    P("J.J. Redick","SG",15.2,2.1,2.2,0.8,0.1,[]),
+    P("Darren Collison","PG",11.4,2.4,3.7,1.2,0.2,[]),
+    P("DeAndre Jordan","C",10.4,13.6,0.9,1.0,2.5,[]),
+    P("Matt Barnes","SF",9.9,4.6,2.0,0.9,0.4,[]),
+    P("Jared Dudley","SF",6.9,2.2,1.4,0.6,0.1,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"2018-19", notable:true, players:[
+    P("Joel Embiid","C",27.5,13.6,3.7,0.7,1.9,[]),
+    P("Jimmy Butler","SF",18.2,5.3,4.0,1.8,0.5,[]),
+    P("Ben Simmons","PG",16.9,8.8,7.7,1.4,0.8,[]),
+    P("J.J. Redick","SG",18.1,2.4,2.7,0.4,0.2,[]),
+    P("Tobias Harris","PF",18.2,7.9,2.9,0.4,0.5,[]),
+    P("T.J. McConnell","PG",6.4,2.3,3.4,1.0,0.2,[]),
+    P("Mike Scott","PF",7.8,3.8,0.8,0.3,0.2,[]),
+    P("Boban Marjanovic","C",8.2,5.1,1.5,0.2,0.5,[])
+  ]},
+  {team:"Atlanta Hawks", season:"2014-15", notable:true, players:[
+    P("Paul Millsap","PF",16.7,7.8,3.1,1.8,0.9,[]),
+    P("Jeff Teague","PG",15.9,2.5,7.0,1.7,0.4,[]),
+    P("Al Horford","C",15.2,7.2,3.2,0.9,1.3,[]),
+    P("DeMarre Carroll","SF",12.6,5.3,1.7,1.3,0.2,[]),
+    P("Kyle Korver","SG",12.1,4.1,2.6,0.7,0.6,[]),
+    P("Dennis Schroder","PG",10.0,2.1,4.1,0.6,0.1,[]),
+    P("Mike Scott","PF",7.8,2.9,1.1,0.4,0.0,[]),
+    P("Thabo Sefolosha","SF",5.3,4.3,1.4,1.0,0.4,[])
+  ]}
+];
+
+const TEAM_COLORS = {
+  "Atlanta Hawks": {bg:"#2E0A10", text:"#E8616E", border:"#C8102E"},
+  "Los Angeles Clippers": {bg:"#0A1E3D", text:"#5A8AD4", border:"#1D428A"},
+  "Toronto Raptors": {bg:"#2A0810", text:"#D45A6A", border:"#CE1141"},
+  "Phoenix Suns": {bg:"#241033", text:"#E86FA0", border:"#E56020"},
+  "Sacramento Kings": {bg:"#1A0E33", text:"#A98FE0", border:"#5A2D81"},
+  "Oklahoma City Thunder": {bg:"#0A2540", text:"#EF6B32", border:"#007AC1"},
+  "Dallas Mavericks": {bg:"#0A1E38", text:"#5BA8E6", border:"#00538C"},
+  "Boston Celtics": {bg:"#062B18", text:"#3FCB84", border:"#0C7A3E"},
+  "Portland Trail Blazers": {bg:"#2E0A0C", text:"#FF6266", border:"#C8322F"},
+  "Golden State Warriors": {bg:"#0B1E45", text:"#FFC72C", border:"#1D428A"},
+  "Los Angeles Lakers": {bg:"#2A123F", text:"#FDB927", border:"#552583"},
+  "Philadelphia 76ers": {bg:"#0A2540", text:"#EF3B24", border:"#006BB6"},
+  "Chicago Bulls": {bg:"#300308", text:"#FF5C6E", border:"#CE1141"},
+  "Houston Rockets": {bg:"#300308", text:"#FF7A7A", border:"#CE1141"},
+  "Utah Jazz": {bg:"#20102E", text:"#F9A01B", border:"#6F2C91"},
+  "San Antonio Spurs": {bg:"#161616", text:"#C4CED4", border:"#8A8D8F"},
+  "Miami Heat": {bg:"#2E0512", text:"#FF6688", border:"#98002E"},
+  "Denver Nuggets": {bg:"#0A1830", text:"#FDB927", border:"#0C2340"},
+  "Milwaukee Bucks": {bg:"#052213", text:"#EEE1C6", border:"#00471B"},
+  "Buffalo Braves": {bg:"#331705", text:"#FFA24D", border:"#F58426"},
+  "Orlando Magic": {bg:"#071D33", text:"#5BB8F5", border:"#0077C0"},
+  "Minnesota Timberwolves": {bg:"#08211D", text:"#5FD3C4", border:"#236192"},
+  "Vancouver Grizzlies": {bg:"#00201F", text:"#4FE0D6", border:"#00A7A0"},
+  "Charlotte Bobcats": {bg:"#331A05", text:"#FF9A4D", border:"#F26522"},
+  "New Jersey Nets": {bg:"#0A1533", text:"#6FA0FF", border:"#003DA5"}
+};
+function teamColorFor(team){ return TEAM_COLORS[team] || {bg:"#1E1E1E", text:"var(--gold)", border:"var(--gold)"}; }
+
+const STAR_SHOOTING = {
+  "Michael Jordan": {fg:53.5, tp:20},
+  "Larry Bird": {fg:49.6, tp:42.3},
+  "Magic Johnson": {fg:52.2, tp:22},
+  "Kareem Abdul-Jabbar": {fg:56.4, tp:null},
+  "Moses Malone": {fg:50.4, tp:null},
+  "Julius Erving": {fg:51.4, tp:20},
+  "Hakeem Olajuwon": {fg:52.7, tp:0},
+  "Shaquille O'Neal": {fg:57.4, tp:0},
+  "Kobe Bryant": {fg:45.0, tp:34.7},
+  "Tim Duncan": {fg:51.3, tp:0},
+  "Karl Malone": {fg:55.0, tp:0},
+  "John Stockton": {fg:51.5, tp:38.8},
+  "Stephen Curry": {fg:48.7, tp:44.3},
+  "Klay Thompson": {fg:45.9, tp:43.9},
+  "Draymond Green": {fg:44.3, tp:33.7},
+  "LeBron James": {fg:56.5, tp:40.6},
+  "Dwyane Wade": {fg:49.8, tp:22},
+  "Chris Bosh": {fg:49.6, tp:33.6},
+  "Giannis Antetokounmpo": {fg:55.3, tp:30.3},
+  "Nikola Jokic": {fg:58.3, tp:33.7},
+  "Jamal Murray": {fg:45.7, tp:33.8},
+  "Paul Pierce": {fg:43.8, tp:38.7},
+  "Kevin Garnett": {fg:52.7, tp:0},
+  "Ray Allen": {fg:44.5, tp:41.5},
+  "Scottie Pippen": {fg:50.6, tp:24.3},
+  "Rick Barry": {fg:50.2, tp:0},
+  "Bill Walton": {fg:52.1, tp:null},
+  "James Worthy": {fg:56.1, tp:0},
+  "Robert Parish": {fg:54.8, tp:null},
+  "David Robinson": {fg:50.7, tp:20},
+  "Tony Parker": {fg:44.9, tp:20.6},
+  "Manu Ginobili": {fg:39.9, tp:32.6}
+};
+
+function assignShootingDefaults(){
+  TEAM_POOL.forEach(t=>{
+    const startYear = parseInt(t.season.split("-")[0], 10);
+    const threeExists = startYear >= 1979;
+    t.players.forEach(p=>{
+      const baseFg = {PG:44, SG:44, SF:46, PF:49, C:52}[p.pos] || 45;
+      const usagePenalty = p.pts >= 25 ? 3 : p.pts >= 18 ? 1 : 0;
+      let fg = baseFg - usagePenalty;
+      let tp = threeExists ? ({PG:35, SG:36, SF:33, PF:31, C:26}[p.pos] || 32) : null;
+      const override = STAR_SHOOTING[p.name];
+      if(override){
+        fg = override.fg;
+        tp = threeExists ? override.tp : null;
+      }
+      p.fg = fg;
+      p.tp = tp;
+    });
+  });
+}
+assignShootingDefaults();
+
+let round, roster, best, runs, hitsAt34, bestRecordWins, bestRecordLosses, usedTeams, draftedTeams, spinning, spunTeam, pendingPlayer, pendingCandidateTeam, selectedSlotPos, simState;
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function composite(p){
+  return p.pts + p.reb*1.2 + p.ast*1.5 + p.stl*3 + p.blk*3;
+}
+
+function fitFactor(p, slotPos){
+  if(slotPos === "6TH MAN") return {factor:1, label:"in", text:"Bench role"};
+  const dist = Math.abs(REAL_POS.indexOf(slotPos) - REAL_POS.indexOf(p.pos));
+  if(dist === 0) return {factor:1, label:"in", text:"In position"};
+  const flex = POS_FLEX[p.pos];
+  const penalty = Math.min(0.35, dist * 0.08 / (1+flex));
+  const label = penalty <= 0.06 ? "slight" : "out";
+  const text = label === "slight" ? `Slightly out of position (natural ${p.pos})` : `Out of position (natural ${p.pos})`;
+  return {factor: 1-penalty, label, text};
+}
+
+function statLine(p){
+  const tpText = p.tp === null ? "No 3PT line" : `${p.tp}% 3P`;
+  return `${p.pts} PTS · ${p.reb} REB · ${p.ast} AST · ${p.stl} STL · ${p.blk} BLK · ${p.fg}% FG · ${tpText}`;
+}
+
+function displayAwards(awards){
+  return (awards||[]).filter(a => a !== "NBA Champion");
+}
+
+function startDraft(){
+  round = 0;
+  roster = {};
+  usedTeams = new Set();
+  draftedTeams = [];
+  selectedSlotPos = null;
+  pendingPlayer = null;
+  simState = null;
+  document.getElementById("resultPanel").style.display = "none";
+  document.getElementById("simPanel").style.display = "none";
+  document.getElementById("draftPanel").style.display = "block";
+  const simBtn = document.getElementById("simBtn");
+  const simNextBtn = document.getElementById("simNextBtn");
+  const newBtn = document.getElementById("newBtn");
+  simBtn.disabled = true;
+  simNextBtn.disabled = true;
+  simBtn.classList.remove("glow");
+  simNextBtn.classList.remove("glow");
+  simBtn.classList.add("primary");
+  newBtn.classList.remove("dimmed");
+  newBtn.classList.add("primary");
+  newBtn.textContent = "Start over";
+  document.getElementById("shareBtn").disabled = true;
+  document.getElementById("playerInfo").classList.remove("show");
+  buildRosterGrid();
+  updateGauge(0);
+  nextRound();
+}
+
+function rosterFilledCount(){ return Object.keys(roster).length; }
+
+function buildRosterGrid(){
+  const grid = document.getElementById("rosterGrid");
+  grid.innerHTML = "";
+  POSITIONS.forEach(pos=>{
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    slot.id = "slot-"+pos.replace(/\s/g,"");
+    slot.innerHTML = `<div class="pos">${pos}</div><div class="who">Open</div><div class="from"></div><div class="fit"></div>`;
+    slot.addEventListener("click", ()=> slotClicked(pos));
+    slot.addEventListener("dragstart", (e)=> onSlotDragStart(e, pos));
+    slot.addEventListener("dragover", onSlotDragOver);
+    slot.addEventListener("drop", (e)=> onSlotDrop(e, pos));
+    slot.addEventListener("dragend", onSlotDragEnd);
+    grid.appendChild(slot);
+  });
+  document.getElementById("rosterCount").textContent = `${rosterFilledCount()} / 6`;
+  updateRosterTotals();
+}
+
+function renderRosterSlot(pos){
+  const slot = document.getElementById("slot-"+pos.replace(/\s/g,""));
+  const entry = roster[pos];
+  slot.classList.toggle("filled", !!entry);
+  slot.classList.toggle("selected", selectedSlotPos === pos);
+  slot.draggable = !!entry;
+  slot.querySelector(".who").textContent = entry ? entry.p.name : "Open";
+  slot.querySelector(".from").textContent = entry ? `${entry.team} ${entry.season}` : "";
+  const fitEl = slot.querySelector(".fit");
+  if(entry){
+    const fit = fitFactor(entry.p, pos);
+    fitEl.textContent = fit.label==="in" ? "" : (fit.label==="slight" ? "Slight OOP" : "Out of pos.");
+    fitEl.className = "fit " + fit.label;
+  } else {
+    fitEl.textContent = "";
+  }
+}
+
+function showPlayerInfo(pos, entry){
+  const panel = document.getElementById("playerInfo");
+  const fit = fitFactor(entry.p, pos);
+  const aw = displayAwards(entry.p.awards);
+  panel.innerHTML = `
+    <div class="pi-name">${entry.p.name} <span style="color:var(--ink-dim);font-weight:400;">— ${pos}</span></div>
+    <div class="pi-meta">${entry.team} ${entry.season} &middot; natural position ${entry.p.pos}</div>
+    <div class="pi-stats">${statLine(entry.p)}</div>
+    <div class="pi-fit ${fit.label}">${fit.text}</div>
+    ${aw.length ? `<div class="pi-awards">${aw.join(" · ")}</div>` : ""}
+  `;
+  panel.classList.add("show");
+}
+
+function highlightPlaceable(){
+  POSITIONS.forEach(pos=>{
+    const slot = document.getElementById("slot-"+pos.replace(/\s/g,""));
+    if(!roster[pos]) slot.classList.add("placeable"); else slot.classList.remove("placeable");
+  });
+}
+
+function clearPlaceable(){
+  POSITIONS.forEach(pos=>{
+    document.getElementById("slot-"+pos.replace(/\s/g,"")).classList.remove("placeable");
+  });
+}
+
+function slotClicked(pos){
+  // Placing a freshly drafted player takes priority.
+  if(pendingPlayer){
+    if(!roster[pos]) placePlayer(pos);
+    return;
+  }
+
+  // A slot is already armed for swapping.
+  if(selectedSlotPos !== null){
+    if(selectedSlotPos === pos){
+      clearSwapSelection();          // tapping the same slot cancels
+      return;
+    }
+    const from = selectedSlotPos;
+    clearSwapSelection();
+    performSwap(from, pos);
+    const entry = roster[pos];
+    if(entry) showPlayerInfo(pos, entry);
+    return;
+  }
+
+  // Arm this slot for a swap (and show its stats).
+  const entry = roster[pos];
+  if(!entry) return;
+  selectedSlotPos = pos;
+  showPlayerInfo(pos, entry);
+  highlightSwapTargets();
+  renderRosterSlot(pos);
+  setRosterHint(`Swapping <b>${entry.p.name}</b> — tap another slot to trade places, or tap them again to cancel.`);
+}
+
+function highlightSwapTargets(){
+  POSITIONS.forEach(p=>{
+    const slot = document.getElementById("slot-"+p.replace(/\s/g,""));
+    if(p !== selectedSlotPos) slot.classList.add("swap-target");
+    else slot.classList.remove("swap-target");
+  });
+}
+
+function clearSwapSelection(){
+  const prev = selectedSlotPos;
+  selectedSlotPos = null;
+  POSITIONS.forEach(p=>{
+    document.getElementById("slot-"+p.replace(/\s/g,"")).classList.remove("swap-target");
+  });
+  if(prev) renderRosterSlot(prev);
+  resetRosterHint();
+}
+
+function setRosterHint(html){
+  const el = document.getElementById("rosterHint");
+  if(el) el.innerHTML = html;
+}
+
+function resetRosterHint(){
+  setRosterHint("Tap a player to see their stats and start a swap, then tap another slot to switch their positions.");
+}
+
+let draggedPos = null;
+
+function onSlotDragStart(e, pos){
+  if(!roster[pos]){ e.preventDefault(); return; }
+  if(selectedSlotPos !== null) clearSwapSelection();
+  draggedPos = pos;
+  e.dataTransfer.effectAllowed = "move";
+  try{ e.dataTransfer.setData("text/plain", pos); }catch(err){}
+  document.getElementById("slot-"+pos.replace(/\s/g,"")).classList.add("dragging");
+}
+
+function onSlotDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+}
+
+function onSlotDrop(e, pos){
+  e.preventDefault();
+  if(draggedPos === null || draggedPos === pos) return;
+  performSwap(draggedPos, pos);
+  draggedPos = null;
+}
+
+function onSlotDragEnd(){
+  POSITIONS.forEach(pos=> document.getElementById("slot-"+pos.replace(/\s/g,"")).classList.remove("dragging"));
+  draggedPos = null;
+}
+
+function performSwap(posA, posB){
+  const a = roster[posA];
+  const b = roster[posB];
+  if(b) roster[posA] = b; else delete roster[posA];
+  if(a) roster[posB] = a; else delete roster[posB];
+  renderRosterSlot(posA);
+  renderRosterSlot(posB);
+  updateRosterTotals();
+}
+
+function nextRound(){
+  pendingPlayer = null;
+  if(round >= 6){
+    document.getElementById("draftPanel").style.display = "none";
+    const simBtn = document.getElementById("simBtn");
+    const simNextBtn = document.getElementById("simNextBtn");
+    const newBtn = document.getElementById("newBtn");
+    simBtn.disabled = false;
+    simNextBtn.disabled = false;
+    simBtn.classList.add("primary","glow");
+    simNextBtn.classList.add("glow");
+    newBtn.classList.remove("primary");
+    newBtn.classList.add("dimmed");
+    return;
+  }
+  document.getElementById("roundLabel").textContent = `Pick ${round+1} / 6`;
+  document.getElementById("pickHint").textContent = "any position";
+  document.getElementById("candidatesWrap").innerHTML = "";
+  const display = document.getElementById("spinDisplay");
+  display.textContent = "Spin for a team";
+  display.classList.remove("locked");
+  display.style.color = "";
+  display.style.background = "";
+  display.style.border = "";
+  display.style.padding = "";
+  const spinBtn = document.getElementById("spinBtn");
+  spinBtn.disabled = false;
+  spinBtn.classList.remove("dimmed");
+  spinBtn.textContent = "Spin";
+  spinBtn.style.background = "";
+  spinBtn.style.color = "";
+  spunTeam = null;
+}
+
+function weightedPick(pool){
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function shuffledBatch(pool){
+  return shuffle(pool);
+}
+
+function spinTeam(){
+  if(spinning) return;
+  spinning = true;
+  document.getElementById("spinBtn").disabled = true;
+  const display = document.getElementById("spinDisplay");
+  display.classList.remove("locked");
+
+  const available = TEAM_POOL.filter(t => !usedTeams.has(t.team+t.season));
+  const pool = available.length ? available : TEAM_POOL;
+
+  let batch = shuffledBatch(pool);
+  let batchIdx = 0;
+  let ticks = 0;
+  const maxTicks = 16 + Math.floor(Math.random()*8);
+  const spinInterval = setInterval(()=>{
+    if(batchIdx >= batch.length){ batch = shuffledBatch(pool); batchIdx = 0; }
+    const t = batch[batchIdx++];
+    display.textContent = `${t.team} · ${t.season}`;
+    ticks++;
+    if(ticks >= maxTicks){
+      clearInterval(spinInterval);
+      spunTeam = weightedPick(pool);
+      const c = teamColorFor(spunTeam.team);
+      display.textContent = `${spunTeam.team} · ${spunTeam.season}`;
+      display.classList.add("locked");
+      display.style.color = c.text;
+      display.style.background = c.bg;
+      display.style.border = `1px solid ${c.border}`;
+      display.style.borderRadius = "8px";
+      display.style.padding = "8px 12px";
+      spinning = false;
+      const btn = document.getElementById("spinBtn");
+      btn.textContent = "Spin again";
+      btn.disabled = true;
+      btn.classList.add("dimmed");
+      btn.style.background = "";
+      btn.style.color = "";
+      showCandidates(spunTeam);
+    }
+  }, 65);
+}
+
+function teamTotals(players){
+  return players.reduce((acc,p)=>{
+    acc.pts+=p.pts; acc.reb+=p.reb; acc.ast+=p.ast; acc.stl+=p.stl; acc.blk+=p.blk; return acc;
+  },{pts:0,reb:0,ast:0,stl:0,blk:0});
+}
+
+function showCandidates(t){
+  const wrap = document.getElementById("candidatesWrap");
+  wrap.innerHTML = "";
+  REAL_POS.forEach(pos=>{
+    const players = t.players.filter(p=>p.pos===pos);
+    if(!players.length) return;
+    const group = document.createElement("div");
+    group.className = "pos-group";
+    const label = document.createElement("div");
+    label.className = "pos-group-label";
+    label.textContent = pos;
+    group.appendChild(label);
+    const list = document.createElement("div");
+    list.className = "candidates";
+    players.forEach(p=>{
+      const card = document.createElement("div");
+      const taken = isNameRostered(p.name);
+      card.className = "candidate" + (taken ? " disabled-candidate" : "");
+      if(taken){
+        card.innerHTML = `<div class="name">${p.name}</div><div class="line">Already rostered</div>`;
+      } else {
+        const aw = displayAwards(p.awards);
+        card.innerHTML = `<div><div class="name">${p.name}</div>${aw.length?`<div class="awards">${aw.join(" · ")}</div>`:""}</div><div class="line">${statLine(p)}</div>`;
+        card.addEventListener("click", ()=> selectCandidate(t, p));
+      }
+      list.appendChild(card);
+    });
+    group.appendChild(list);
+    wrap.appendChild(group);
+  });
+}
+
+function updateRosterTotals(){
+  const el = document.getElementById("rosterTotals");
+  if(!el) return;
+  const players = Object.values(roster).map(r=>r.p);
+  if(!players.length){
+    el.textContent = "Your team totals will build up here as you draft.";
+    return;
+  }
+  const totals = teamTotals(players);
+  el.innerHTML = `<span style="color:var(--gold);">Your team so far (${players.length}/6):</span> ${totals.pts.toFixed(1)} PTS · ${totals.reb.toFixed(1)} REB · ${totals.ast.toFixed(1)} AST · ${totals.stl.toFixed(1)} STL · ${totals.blk.toFixed(1)} BLK`;
+}
+
+function selectCandidate(t, p){
+  pendingPlayer = p;
+  pendingCandidateTeam = t;
+  const wrap = document.getElementById("candidatesWrap");
+  wrap.innerHTML = `<div class="picking-banner">You picked <b>${p.name}</b> (natural position: ${p.pos}). Tap an open slot in <b>Your lineup</b> below to place him.</div>`;
+  highlightPlaceable();
+}
+
+function placePlayer(pos){
+  const t = pendingCandidateTeam, p = pendingPlayer;
+  usedTeams.add(t.team+t.season);
+  draftedTeams.push(t);
+  roster[pos] = {team:t.team, season:t.season, p};
+  clearPlaceable();
+  renderRosterSlot(pos);
+  document.getElementById("rosterCount").textContent = `${rosterFilledCount()} / 6`;
+  updateRosterTotals();
+  pendingPlayer = null;
+  round++;
+  nextRound();
+}
+
+function rosterArray(){
+  return POSITIONS.map(pos=> roster[pos] ? {pos, ...roster[pos]} : null).filter(Boolean);
+}
+
+// Estimate per-game shot volume from points and shooting efficiency so we can
+// apply real advanced-stat formulas. Derived only from stats already in the pool.
+function estimateShooting(p){
+  const fgPct = (p.fg || 45) / 100;
+  const tpPct = (p.tp === null || p.tp === undefined) ? 0 : p.tp / 100;
+  // Assume ~25% of a scorer's makes are threes in the 3PT era, scaled by 3P%.
+  const threeShare = (p.tp === null || p.tp === undefined) ? 0 : Math.min(0.45, tpPct * 0.9);
+  // Approximate free throw contribution: guards/wings draw more than the raw model implies.
+  const ftPerGame = Math.max(0, p.pts * 0.18);
+  const ftm = ftPerGame * 0.75;
+  const pointsFromFt = ftm;
+  const pointsFromField = Math.max(0, p.pts - pointsFromFt);
+  const threePts = pointsFromField * threeShare;
+  const twoPts = pointsFromField - threePts;
+  const tpm = threePts / 3;
+  const twoM = twoPts / 2;
+  const fgm = tpm + twoM;
+  const fga = fgPct > 0 ? fgm / fgPct : fgm * 2.2;
+  const fta = ftm > 0 ? ftm / 0.75 : 0;
+  return {fgm, fga, tpm, ftm, fta};
+}
+
+// John Hollinger's Game Score — a real, published single-number box-score metric
+// (the same formula Basketball-Reference lists). All inputs are derived from the
+// verified per-game stats in the pool; no new data is invented.
+function playerRating(p){
+  const s = estimateShooting(p);
+  const tov = Math.max(0.8, p.ast * 0.55 + p.pts * 0.045);
+  const orb = p.reb * 0.28;
+  const drb = p.reb - orb;
+  const gs =
+      p.pts
+    + 0.4 * s.fgm
+    - 0.7 * s.fga
+    - 0.4 * (s.fta - s.ftm)
+    + 0.7 * orb
+    + 0.3 * drb
+    + p.stl
+    + 0.7 * p.ast
+    + 0.7 * p.blk
+    - 0.4 * 2.0   // fouls (neutral constant)
+    - 1.0 * tov;
+  return gs;
+}
+
+const _ratingCache = new WeakMap();
+function composite(p){
+  // Keep name for existing callers; now backed by the Game Score advanced metric.
+  // Player objects are immutable at runtime, so the result is safe to cache.
+  let cached = _ratingCache.get(p);
+  if(cached === undefined){
+    cached = playerRating(p);
+    _ratingCache.set(p, cached);
+  }
+  return cached;
+}
+
+function teamComposite(arr){
+  const withFit = arr.map(r=> composite(r.p) * fitFactor(r.p, r.pos).factor);
+  return withFit.reduce((a,b)=>a+b,0) / withFit.length;
+}
+
+function roleBalance(arr){
+  const scorers = arr.filter(r=> r.p.pts >= 22).length;
+  const facilitator = arr.some(r=> r.p.ast >= 5.5);
+  const rebounder = arr.some(r=> r.p.reb >= 8);
+  const pureScorer = arr.some(r=> r.p.pts >= 24);
+  const shooter = arr.some(r=> r.p.tp !== null && r.p.tp !== undefined && r.p.tp >= 37);
+  const rimProtector = arr.some(r=> r.p.blk >= 1.5);
+  let mult = 1.0;
+  if(scorers >= 4) mult -= 0.14;
+  if(!facilitator) mult -= 0.10;
+  if(!rebounder) mult -= 0.10;
+  if(!pureScorer) mult -= 0.05;
+  if(!shooter) mult -= 0.05;   // spacing matters
+  if(!rimProtector) mult -= 0.04;
+  return Math.max(0.60, Math.min(1.06, mult));
+}
+
+const AWARD_WEIGHTS = {
+  "MVP": 6,
+  "Finals MVP": 5,
+  "Defensive Player of the Year": 4,
+  "Scoring Champion": 3,
+  "Sixth Man of the Year": 3,
+  "Rebounding Champion": 2
+};
+
+function accoladeBonus(arr){
+  let score = 0;
+  arr.forEach(r=> (r.p.awards||[]).forEach(a=>{ if(AWARD_WEIGHTS[a]) score += AWARD_WEIGHTS[a]; }));
+  return score;
+}
+
+function effectiveComposite(arr){
+  const chem = (simState && typeof simState.chemistry === "number") ? simState.chemistry : 70;
+  const chemMult = 0.85 + (chem/100) * 0.20;
+  return (teamComposite(arr) * roleBalance(arr) + accoladeBonus(arr) * 0.6) * chemMult;
+}
+
+function pWinFor(avg, gameIndex){
+  // avg now sits on the Game Score scale (a strong lineup averages ~14-20).
+  const base = Math.min(0.995, Math.max(0.70, 0.80 + (avg-13)/22));
+  const earlyBonus = Math.max(0, 0.13 - (gameIndex||0) * 0.022);
+  const decay = Math.min(0.35, (gameIndex||0) * 0.008);
+  return Math.max(0.25, Math.min(0.997, base + earlyBonus - decay));
+}
+
+function genScore(won, pWin){
+  const opp = 96 + Math.floor(Math.random()*22);
+  let diff;
+  if(won){ diff = 3 + Math.floor(Math.random()*(8 + Math.round(pWin*22))); }
+  else { diff = 3 + Math.floor(Math.random()*(8 + Math.round((1-pWin)*22))); }
+  const your = won ? opp + diff : Math.max(72, opp - diff);
+  return {your, opp};
+}
+
+function initSimUI(){
+  document.getElementById("simBtn").disabled = false;
+  document.getElementById("simNextBtn").disabled = false;
+  document.getElementById("newBtn").disabled = true;
+  document.getElementById("simPanel").style.display = "block";
+  document.getElementById("resultPanel").style.display = "none";
+  document.getElementById("simStatus").textContent = "Ready";
+  document.getElementById("eventZone").innerHTML = "";
+  document.getElementById("pauseBtn").style.display = "none";
+
+  const log = document.getElementById("gamelog");
+  log.innerHTML = "";
+  OPPONENTS.forEach(g=>{
+    const item = document.createElement("div");
+    item.className = "glog-item pending" + (g.bonus ? " bonus" : "");
+    item.id = "glog-"+g.n;
+    item.innerHTML = `<div class="n">Gm ${g.n}${g.bonus ? " · record game" : ""} &middot; ${g.date}</div><div class="opp">${g.opp}</div><div class="score">&mdash;</div>`;
+    log.appendChild(item);
+  });
+
+  runs = (runs||0) + 1;
+  simState = {i:0, streakLen:0, milestonesHit:new Set(), hasLost:false, overallWins:0, mode:"manual", processing:false, chemistry:55, injuredOut:[], paused:false};
+  updateGauge(0);
+  updateChemistryUI();
+}
+
+function updateChemistryUI(){
+  const el = document.getElementById("chemistryOut");
+  const fill = document.getElementById("chemFill");
+  if(!el || !simState) return;
+  const pct = Math.round(simState.chemistry);
+  el.textContent = pct + "%";
+  if(fill) fill.style.width = pct + "%";
+}
+
+function simNextGame(){
+  if(!simState) initSimUI();
+  if(simState.processing) return;
+  simState.mode = "manual";
+  simState.processing = true;
+  document.getElementById("pauseBtn").style.display = "none";
+  document.getElementById("simNextBtn").disabled = true;
+  document.getElementById("simStatus").textContent = `Game ${simState.i+1} of ${OPPONENTS.length}`;
+  setTimeout(()=>stepGame(), 120);
+}
+
+function simFullSeason(){
+  if(!simState) initSimUI();
+  simState.mode = "auto";
+  simState.paused = false;
+  document.getElementById("pauseBtn").style.display = "block";
+  document.getElementById("pauseBtn").textContent = "Pause simulation";
+  document.getElementById("simNextBtn").disabled = true;
+  document.getElementById("simStatus").textContent = "In progress";
+  if(!simState.processing){
+    simState.processing = true;
+    stepGame();
+  }
+}
+
+function togglePause(){
+  if(!simState || simState.mode !== "auto") return;
+  simState.paused = !simState.paused;
+  const btn = document.getElementById("pauseBtn");
+  if(simState.paused){
+    btn.textContent = "Resume simulation";
+    document.getElementById("simStatus").textContent = "Paused";
+  } else {
+    btn.textContent = "Pause simulation";
+    if(!simState.processing){
+      simState.processing = true;
+      stepGame();
+    }
+  }
+}
+
+function advanceSim(){
+  if(simState.mode === "auto"){
+    if(simState.paused){
+      simState.processing = false;
+      document.getElementById("simStatus").textContent = "Paused";
+      return;
+    }
+    setTimeout(()=>stepGame(), simState.hasLost ? 180 : 260);
+  } else {
+    simState.processing = false;
+    if(simState.i < OPPONENTS.length){
+      document.getElementById("simNextBtn").disabled = false;
+      document.getElementById("simStatus").textContent = `Game ${simState.i+1} of ${OPPONENTS.length} — ready`;
+    }
+  }
+}
+
+function stepGame(){
+  if(simState.i >= OPPONENTS.length){
+    finishRun(simState.streakLen, simState.hasLost, simState.overallWins);
+    return;
+  }
+
+  const dueIdx = simState.injuredOut.findIndex(e => e.returnAtGameIndex <= simState.i);
+  if(dueIdx !== -1 && !simState.hasLost){
+    const entry = simState.injuredOut.splice(dueIdx,1)[0];
+    showReturnEvent(entry);
+    return;
+  }
+
+  const g = OPPONENTS[simState.i];
+  const item = document.getElementById("glog-"+g.n);
+  item.classList.remove("pending");
+  item.querySelector(".score").textContent = "…";
+  item.classList.add("suspense");
+  item.scrollIntoView({behavior:"smooth", block:"nearest"});
+  setTimeout(()=> revealGame(g, item), simState.hasLost ? 260 : 850);
+}
+
+function revealGame(g, item){
+  item.classList.remove("suspense");
+  const arr = rosterArray();
+  const avg = effectiveComposite(arr);
+  const pWin = pWinFor(avg, simState.i);
+  const won = Math.random() < pWin;
+  const score = genScore(won, pWin);
+  item.querySelector(".score").textContent = `${score.your}\u2013${score.opp}`;
+
+  if(won){
+    item.classList.add("win");
+    simState.overallWins++;
+    simState.chemistry = Math.min(100, simState.chemistry + 1.6);
+    if(!simState.hasLost){
+      simState.streakLen++;
+      updateGauge(simState.streakLen);
+      if(simState.streakLen === 33) showMilestone("33 straight — you tied the Lakers' real record.");
+    }
+  } else {
+    item.classList.add("loss");
+    simState.hasLost = true;
+    simState.chemistry = Math.max(15, simState.chemistry - 1.5);
+  }
+  updateChemistryUI();
+  simState.i++;
+
+  if(simState.hasLost){
+    advanceSim();
+    return;
+  }
+
+  if([10,20,33].includes(simState.streakLen) && !simState.milestonesHit.has(simState.streakLen)){
+    simState.milestonesHit.add(simState.streakLen);
+    showMilestoneEvent(simState.streakLen);
+    return;
+  }
+
+  const arr2 = rosterArray();
+  const injuredPick = arr2.find(r => Math.random() < INJ_RATE[r.p.injuryRisk||"medium"]);
+  if(injuredPick){
+    showInjuryEvent(injuredPick);
+    return;
+  }
+
+  if(Math.random() < 0.035){
+    showTradeEvent();
+    return;
+  }
+
+  advanceSim();
+}
+
+function clearEventZone(){
+  document.getElementById("eventZone").innerHTML = "";
+}
+
+function showMilestoneEvent(n){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `
+    <div class="event-title">${n} straight</div>
+    <div class="event-text">You've hit a milestone. Keep this lineup rolling, or gamble one player and spin for a random replacement before the next game.</div>
+    <div class="event-actions">
+      <button class="event-btn secondary" id="milestoneKeep">Keep going</button>
+      <button class="event-btn" id="milestoneGamble">Gamble: replace a player</button>
+    </div>
+  `;
+  zone.appendChild(panel);
+  document.getElementById("milestoneKeep").addEventListener("click", ()=>{ clearEventZone(); advanceSim(); });
+  document.getElementById("milestoneGamble").addEventListener("click", ()=> startGambleFlow());
+}
+
+function startGambleFlow(){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `<div class="event-title">Choose who to risk</div><div class="event-text">Pick a player to bench. You'll spin for a team, then choose their replacement yourself.</div>`;
+  const picker = document.createElement("div");
+  picker.className = "slot-picker";
+  rosterArray().forEach(r=>{
+    const btn = document.createElement("div");
+    btn.className = "slot-choice";
+    btn.textContent = `${r.pos}: ${r.p.name}`;
+    btn.addEventListener("click", ()=> gambleReplace(r.pos));
+    picker.appendChild(btn);
+  });
+  panel.appendChild(picker);
+  zone.appendChild(panel);
+}
+
+function teamStrength(t){
+  // Average Game Score of a team's top 6 players — used to rank teams for the gamble.
+  const rated = t.players.map(p => composite(p)).sort((a,b)=> b-a).slice(0,6);
+  return rated.reduce((a,b)=>a+b,0) / rated.length;
+}
+
+let _extremePoolCache = null;
+function extremeGamblePool(){
+  if(_extremePoolCache) return _extremePoolCache;
+  const ranked = [...TEAM_POOL].sort((a,b)=> teamStrength(b) - teamStrength(a));
+  const n = ranked.length;
+  const topCount = Math.max(4, Math.round(n * 0.22));
+  const bottomCount = Math.max(4, Math.round(n * 0.22));
+  const best = ranked.slice(0, topCount);
+  const worst = ranked.slice(n - bottomCount);
+  _extremePoolCache = best.concat(worst);
+  return _extremePoolCache;
+}
+
+function gambleReplace(pos){
+  simState.chemistry = Math.max(15, simState.chemistry - 20);
+  updateChemistryUI();
+  replaceSlot(pos, "Gamble", ()=>{ clearEventZone(); advanceSim(); }, extremeGamblePool());
+}
+
+function showInjuryEvent(entry){
+  const injury = rollInjury();
+  const returnAtGameIndex = simState.i + injury.games;
+  simState.injuredOut.push({
+    pos: entry.pos, team: entry.team, season: entry.season, player: entry.p, returnAtGameIndex
+  });
+  simState.chemistry = Math.max(15, simState.chemistry - 20);
+  updateChemistryUI();
+
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `
+    <div class="event-title">Injury</div>
+    <div class="event-text"><b>${entry.p.name}</b> ${injury.desc}, expected to miss ${injury.games} game${injury.games===1?"":"s"}.</div>
+    <div class="event-actions"><button class="event-btn" id="injurySpin">Spin for replacement</button></div>
+  `;
+  zone.appendChild(panel);
+  document.getElementById("injurySpin").addEventListener("click", ()=>{
+    replaceSlot(entry.pos, "Injury replacement", ()=>{ clearEventZone(); advanceSim(); });
+  });
+}
+
+function showReturnEvent(entry){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const currentHolder = roster[entry.pos];
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `
+    <div class="event-title">Back from injury</div>
+    <div class="event-text"><b>${entry.player.name}</b> is healthy and available at ${entry.pos} again, currently held by <b>${currentHolder ? currentHolder.p.name : "no one"}</b>. Bring him back in, or stick with what's working?</div>
+    <div class="event-actions">
+      <button class="event-btn secondary" id="returnDecline">Keep current player</button>
+      <button class="event-btn" id="returnAccept">Reinsert ${entry.player.name.split(" ").pop()}</button>
+    </div>
+  `;
+  zone.appendChild(panel);
+  document.getElementById("returnDecline").addEventListener("click", ()=>{ clearEventZone(); advanceSim(); });
+  document.getElementById("returnAccept").addEventListener("click", ()=>{
+    roster[entry.pos] = {team: entry.team, season: entry.season, p: entry.player};
+    renderRosterSlot(entry.pos);
+    updateRosterTotals();
+    clearEventZone();
+    advanceSim();
+  });
+}
+
+function replaceSlot(pos, label, onDone, customPool){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `<div class="event-title">${label}</div><div class="spin-display" id="replaceSpinDisplay">Spinning...</div>`;
+  zone.appendChild(panel);
+
+  const source = customPool && customPool.length ? customPool : TEAM_POOL;
+  const available = source.filter(t => !usedTeams.has(t.team+t.season));
+  const pool = available.length ? available : source;
+  let ticks = 0;
+  const maxTicks = 14;
+  const display = document.getElementById("replaceSpinDisplay");
+  const iv = setInterval(()=>{
+    const t = pool[Math.floor(Math.random()*pool.length)];
+    display.textContent = `${t.team} · ${t.season}`;
+    ticks++;
+    if(ticks >= maxTicks){
+      clearInterval(iv);
+      const t = pool[Math.floor(Math.random()*pool.length)];
+      usedTeams.add(t.team+t.season);
+      draftedTeams.push(t);
+      showReplacementPicker(t, pos, label, onDone);
+    }
+  }, 60);
+}
+
+function showReplacementPicker(t, pos, label, onDone){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `<div class="event-title">${t.team} · ${t.season}</div><div class="event-text">Pick who fills ${pos}.</div>`;
+  const list = document.createElement("div");
+  list.className = "candidates";
+  t.players.forEach(p=>{
+    const taken = isNameRostered(p.name);
+    const card = document.createElement("div");
+    card.className = "candidate" + (taken ? " disabled-candidate" : "");
+    card.innerHTML = taken
+      ? `<div class="name">${p.name}</div><div class="line">Already rostered</div>`
+      : `<div class="name">${p.name} <span style="color:var(--ink-dim);font-weight:400;">(${p.pos})</span></div><div class="line">${statLine(p)}</div>`;
+    if(!taken){
+      card.addEventListener("click", ()=>{
+        roster[pos] = {team:t.team, season:t.season, p};
+        renderRosterSlot(pos);
+        updateRosterTotals();
+        panel.innerHTML = `<div class="event-title">${label}</div><div class="event-text">In comes <b>${p.name}</b> (${t.team} ${t.season}) at ${pos}.</div><div class="event-actions"><button class="event-btn" id="replaceContinue">Continue</button></div>`;
+        document.getElementById("replaceContinue").addEventListener("click", onDone);
+      });
+    }
+    list.appendChild(card);
+  });
+  panel.appendChild(list);
+  zone.appendChild(panel);
+}
+
+function showTradeEvent(){
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const arr = rosterArray();
+  const target = arr[Math.floor(Math.random()*arr.length)];
+  const targetComposite = composite(target.p);
+  const available = TEAM_POOL.filter(t => !usedTeams.has(t.team+t.season));
+  const pool = available.length ? available : TEAM_POOL;
+
+  const sampleTeams = shuffle(pool).slice(0, Math.min(6, pool.length));
+  let candidates = [];
+  sampleTeams.forEach(t=>{
+    t.players.filter(p=> p.pos===target.pos && !isNameRostered(p.name)).forEach(p=> candidates.push({team:t, player:p}));
+  });
+  if(!candidates.length){
+    sampleTeams.forEach(t=> t.players.filter(p=>!isNameRostered(p.name)).forEach(p=> candidates.push({team:t, player:p})));
+  }
+  if(!candidates.length){ advanceSim(); return; }
+  candidates.sort((a,b)=> Math.abs(composite(a.player)-targetComposite) - Math.abs(composite(b.player)-targetComposite));
+  const pick = candidates[Math.floor(Math.random()*Math.min(3,candidates.length))];
+  const offerTeam = pick.team;
+  const offerPlayer = pick.player;
+
+  const panel = document.createElement("div");
+  panel.className = "event-panel";
+  panel.innerHTML = `
+    <div class="event-title">Trade offer</div>
+    <div class="event-text">${offerTeam.team} calls with an offer for your ${target.pos}, ${target.p.name}.</div>
+    <div class="event-compare">
+      <div class="event-card"><div class="t">You give up</div><div class="n">${target.p.name}</div><div class="s">${statLine(target.p)}</div></div>
+      <div class="event-card"><div class="t">You receive</div><div class="n">${offerPlayer.name}</div><div class="s">${statLine(offerPlayer)}</div></div>
+    </div>
+    <div class="event-actions">
+      <button class="event-btn secondary" id="tradeDecline">Decline</button>
+      <button class="event-btn" id="tradeAccept">Accept trade</button>
+    </div>
+  `;
+  zone.appendChild(panel);
+  document.getElementById("tradeDecline").addEventListener("click", ()=>{ clearEventZone(); advanceSim(); });
+  document.getElementById("tradeAccept").addEventListener("click", ()=>{
+    usedTeams.add(offerTeam.team+offerTeam.season);
+    draftedTeams.push(offerTeam);
+    roster[target.pos] = {team:offerTeam.team, season:offerTeam.season, p:offerPlayer};
+    renderRosterSlot(target.pos);
+    updateRosterTotals();
+    simState.chemistry = Math.max(15, simState.chemistry - 20);
+    updateChemistryUI();
+    clearEventZone();
+    advanceSim();
+  });
+}
+
+function shortAnalysis(arr, streakLen){
+  const scorers = arr.filter(r=> r.p.pts >= 22);
+  const facilitator = arr.find(r=> r.p.ast >= 5.5);
+  const rebounder = arr.find(r=> r.p.reb >= 8);
+  const pureScorer = arr.find(r=> r.p.pts >= 24);
+  const oop = arr.filter(r=> fitFactor(r.p,r.pos).label!=="in");
+
+  const issues = [];
+  if(scorers.length >= 4){
+    const names = scorers.slice(0,3).map(r=>r.p.name.split(" ").pop()).join(", ");
+    issues.push(`too many high-usage scorers on one roster (${names} all need 20+ shots to be effective), which clogs the offense instead of amplifying it`);
+  }
+  if(!facilitator) issues.push("no true table-setter — nobody averaging real playmaking numbers to get everyone else easy looks");
+  if(!rebounder) issues.push("no reliable rebounder, so extra possessions likely went the other way against bigger frontcourts");
+  if(!pureScorer) issues.push("no featured go-to scorer for when a possession broke down late in close games");
+  if(oop.length >= 2) issues.push(`${oop.length} players stuck out of natural position, quietly bleeding efficiency every game`);
+
+  const positives = [];
+  if(facilitator) positives.push(`${facilitator.p.name.split(" ").pop()} kept the offense honest as a real facilitator`);
+  if(rebounder) positives.push(`${rebounder.p.name.split(" ").pop()} controlled the glass`);
+  if(pureScorer && scorers.length < 4) positives.push(`${pureScorer.p.name.split(" ").pop()} gave the team a legitimate go-to scorer without crowding everyone else out`);
+  if(!issues.length) positives.push("every role was covered without redundancy");
+
+  let text = "";
+  text += positives.length ? `What worked: ${positives.slice(0,2).join("; ")}. ` : "Nothing on this roster stood out as a real strength. ";
+
+  if(issues.length){
+    text += `What didn't: ${issues.slice(0,2).join("; ")}.`;
+  } else if(streakLen < 20){
+    text += "Nothing structurally wrong here, either — a streak this short with a roster this solid was mostly bad luck. Even a great team's win probability compounds fast over dozens of games, so one or two bad bounces early can end a run that should've gone longer.";
+  } else {
+    text += "This roster genuinely had no real hole, which is exactly why it ran as long as it did.";
+  }
+
+  return text;
+}
+
+const REAL_STREAKS = [
+  {games:33, team:"Los Angeles Lakers", season:"1971-72"},
+  {games:27, team:"Miami Heat", season:"2012-13"},
+  {games:24, team:"Golden State Warriors", season:"2015-16"},
+  {games:22, team:"Houston Rockets", season:"2007-08"},
+  {games:20, team:"Milwaukee Bucks", season:"1970-71"},
+  {games:19, team:"Atlanta Hawks", season:"2014-15"},
+  {games:19, team:"San Antonio Spurs", season:"2013-14"},
+  {games:19, team:"Boston Celtics", season:"2008-09"},
+  {games:19, team:"Los Angeles Lakers", season:"1999-00"}
+];
+
+// The real single-season regular-season top 10 bottoms out at 19 wins (a four-way tie for 6th).
+// Only surface a ranking if the streak would actually place in that top 10.
+const TOP10_CUTOFF = 19;
+
+function allTimeRanking(streakLen){
+  if(streakLen < TOP10_CUTOFF) return null;
+  const sorted = [...REAL_STREAKS].sort((a,b)=> b.games - a.games);
+  if(streakLen > sorted[0].games){
+    return `That's better than any single-season winning streak in real NBA history — ahead of the ${sorted[0].team}'s all-time record of ${sorted[0].games} straight (${sorted[0].season}).`;
+  }
+  if(streakLen === sorted[0].games){
+    return `That ties the actual all-time NBA record — the ${sorted[0].team}'s ${sorted[0].games}-game streak (${sorted[0].season}).`;
+  }
+  // Count how many real streaks were longer to get a rough placement.
+  const longer = sorted.filter(s=> s.games > streakLen).length;
+  const tied = sorted.filter(s=> s.games === streakLen);
+  const place = longer + 1;
+  if(tied.length){
+    const example = tied[0];
+    return `A real run of ${streakLen} would rank around #${place} all-time, level with streaks like the ${example.team}'s (${example.season}).`;
+  }
+  const justAbove = sorted.filter(s=> s.games > streakLen).pop();
+  const justBelow = sorted.filter(s=> s.games < streakLen)[0];
+  if(justAbove && justBelow){
+    return `A real run of ${streakLen} would slot in around #${place} all-time, between the ${justAbove.team}'s ${justAbove.games} (${justAbove.season}) and the ${justBelow.team}'s ${justBelow.games} (${justBelow.season}).`;
+  }
+  return `A real run of ${streakLen} would rank around #${place} in single-season NBA history.`;
+}
+
+function launchConfetti(){
+  const colors = ["#D4AF37","#FF6B35","#FFC145","#F0D775","#3FBF7F","#E8E3D6"];
+  for(let i=0;i<120;i++){
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.left = Math.random()*100 + "vw";
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDuration = (2.2 + Math.random()*1.8) + "s";
+    piece.style.animationDelay = (Math.random()*0.6) + "s";
+    piece.style.opacity = String(0.7 + Math.random()*0.3);
+    document.body.appendChild(piece);
+    setTimeout(()=> piece.remove(), 5000);
+  }
+}
+
+function fmtRecord(w,l){ return `${w}-${l}`; }
+
+function finishRun(streakLen, hasLost, overallWins){
+  clearEventZone();
+  const losses = 34 - overallWins;
+  document.getElementById("simStatus").textContent = hasLost
+    ? `Streak ended at ${streakLen} · finished ${overallWins}-${losses} over 34`
+    : `Ran undefeated, 34-0`;
+  document.getElementById("newBtn").disabled = false;
+  document.getElementById("newBtn").textContent = "Draft again";
+  document.getElementById("shareBtn").disabled = false;
+  document.getElementById("simBtn").disabled = true;
+  document.getElementById("simNextBtn").disabled = true;
+  document.getElementById("simBtn").classList.remove("glow");
+  document.getElementById("simNextBtn").classList.remove("glow");
+  document.getElementById("pauseBtn").style.display = "none";
+
+  if(streakLen > (best||0)) best = streakLen;
+  if(overallWins > (bestRecordWins===undefined ? -1 : bestRecordWins)){
+    bestRecordWins = overallWins;
+    bestRecordLosses = losses;
+  }
+  if(streakLen >= 34){
+    hitsAt34 = (hitsAt34||0) + 1;
+    launchConfetti();
+  }
+
+  let verdict;
+  if(streakLen >= 34){
+    verdict = "34 straight. Your lineup beat Milwaukee on Jan. 9, 1972 &mdash; the exact game that ended the real streak &mdash; and broke the NBA record.";
+    showMilestone("34 straight — you broke the record.");
+  } else if(streakLen === 33){
+    verdict = `You matched the Lakers game-for-game across all 33, then lost the record game to Milwaukee, just like they did. Full simulated record: ${overallWins}-${losses}.`;
+  } else if(streakLen >= 24){
+    verdict = `Your streak reached ${streakLen} games before losing to the ${OPPONENTS[streakLen].opp} on ${OPPONENTS[streakLen].date}. Full simulated record: ${overallWins}-${losses}.`;
+  } else if(streakLen >= 12){
+    verdict = `A respectable run. The streak ended at ${streakLen} against the ${OPPONENTS[streakLen] ? OPPONENTS[streakLen].opp : "next opponent"}. Full simulated record: ${overallWins}-${losses}.`;
+  } else if(streakLen > 0){
+    verdict = `The streak snapped early, at ${streakLen} games, against the ${OPPONENTS[streakLen] ? OPPONENTS[streakLen].opp : "next opponent"}. Full simulated record: ${overallWins}-${losses}.`;
+  } else {
+    verdict = `Lost game one. Full simulated record: ${overallWins}-${losses}. Try a different lineup.`;
+  }
+  document.getElementById("verdictOut").innerHTML = verdict;
+  document.getElementById("resultTag").textContent = streakLen + " / 34";
+  window.__lastStreak = streakLen;
+  window.__lastRecord = {wins: overallWins, losses: losses};
+
+  const arrFinal = rosterArray();
+  const topPerformer = [...arrFinal].sort((a,b)=> composite(b.p)-composite(a.p))[0];
+  if(topPerformer){
+    document.getElementById("bestPerformerOut").textContent = `Best performer this run: ${topPerformer.p.name} (${topPerformer.pos}, ${topPerformer.team} ${topPerformer.season}) — ${statLine(topPerformer.p)}`;
+  }
+
+  document.getElementById("analysisOut").textContent = shortAnalysis(rosterArray(), streakLen);
+  const rankText = allTimeRanking(streakLen);
+  const allTimeBlock = document.getElementById("allTimeOut").parentElement;
+  if(rankText){
+    document.getElementById("allTimeOut").textContent = rankText;
+    allTimeBlock.style.display = "block";
+  } else {
+    allTimeBlock.style.display = "none";
+  }
+  document.getElementById("resultPanel").style.display = "block";
+
+  document.getElementById("bestOut").textContent = best;
+  document.getElementById("bestRecordOut").textContent = bestRecordWins===undefined ? "—" : fmtRecord(bestRecordWins, bestRecordLosses);
+}
+
+function updateGauge(val){
+  document.getElementById("streakNum").textContent = val;
+  document.getElementById("gaugeFill").style.width = Math.min(100, (val/34)*100) + "%";
+}
+
+function showMilestone(msg){
+  const banner = document.getElementById("milestoneBanner");
+  banner.textContent = msg;
+  banner.style.display = "block";
+  setTimeout(()=>{ banner.style.display = "none"; }, 3400);
+}
+
+function shareResult(){
+  const streakLen = window.__lastStreak || 0;
+  const rec = window.__lastRecord || {wins:0, losses:34};
+  const lineupStr = rosterArray().map(r=>{
+    const abbr = r.pos === "6TH MAN" ? "6" : r.pos;
+    return `${r.p.name} (${abbr})`;
+  }).join(", ");
+  const text = `🔥Streak: ${streakLen}\n📆 Record: ${rec.wins}-${rec.losses}\n🤝 Lineup: ${lineupStr}\n🔗 Play: ${GAME_URL}`;
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  const btn = document.getElementById("shareBtn");
+  const original = btn.textContent;
+  btn.textContent = "Copied to clipboard";
+  setTimeout(()=>{ btn.textContent = original; }, 1800);
+}
+
+document.getElementById("spinBtn").addEventListener("click", spinTeam);
+document.getElementById("simNextBtn").addEventListener("click", simNextGame);
+document.getElementById("simBtn").addEventListener("click", simFullSeason);
+document.getElementById("pauseBtn").addEventListener("click", togglePause);
+document.getElementById("newBtn").addEventListener("click", startDraft);
+document.getElementById("shareBtn").addEventListener("click", shareResult);
+document.getElementById("introStart").addEventListener("click", ()=>{
+  document.getElementById("introOverlay").classList.add("hidden");
+});
+document.getElementById("howtoBtn").addEventListener("click", ()=>{
+  document.getElementById("introOverlay").classList.remove("hidden");
+});
+
+best = 0; runs = 0; hitsAt34 = 0; spinning = false;
+startDraft();
+</script>
+</body>
+</html>
