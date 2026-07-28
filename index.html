@@ -199,6 +199,7 @@
   .candidate.disabled-candidate:hover{border-color:var(--line);}
   .candidate .name{font-weight:500;font-size:13.5px;}
   .candidate .awards{font-size:10px;color:var(--gold);margin-top:2px;}
+  .candidate .pos-line{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--good);margin-top:2px;letter-spacing:.03em;}
   .candidate .line{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
   .slot-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
   .slot-choice{background:var(--panel-2);border:1px solid var(--gold);border-radius:8px;padding:12px 6px;text-align:center;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);}
@@ -454,7 +455,7 @@
         </button>
         <button class="mode-opt" id="modeHard">
           <span class="mode-opt-name">Hard mode</span>
-          <span class="mode-opt-desc">Stats are hidden and positions lock once placed — draft on name and reputation alone.</span>
+          <span class="mode-opt-desc">Stats stay hidden until your lineup is set, positions lock once placed, and injuries strike more often &mdash; draft on name and reputation alone.</span>
         </button>
       </div>
     </div>
@@ -493,7 +494,7 @@
 
   <div class="panel">
     <div class="panel-head"><span>Your lineup</span><span id="rosterCount">0 / 6</span></div>
-    <div class="step-guide">Fill all six spots (PG, SG, SF, PF, C, and a 6th man). A balanced lineup &mdash; a scorer, a passer, a rebounder, some shooting &mdash; wins more than five ball-dominant stars. Each filled slot flags position fit: no label means a <span class="fit-key in">natural fit</span>, <span class="fit-key slight">Slight OOP</span> is slightly off, and <span class="fit-key out">Out of pos.</span> means they're played out of position (which costs you).</div>
+    <div class="step-guide">Fill all six spots (PG, SG, SF, PF, C, and a 6th man). A balanced lineup &mdash; a scorer, a passer, a rebounder, some shooting &mdash; wins more than five ball-dominant stars. Every player lists the positions they can play; slotting them anywhere on that list is a <span class="fit-key in">natural fit</span>. Force them somewhere they can't play and it shows <span class="fit-key out">Out of pos.</span> and costs you.</div>
     <div class="roster-grid" id="rosterGrid"></div>
     <div class="roster-hint" id="rosterHint">Tap a player to see their stats and start a swap, then tap another slot to switch their positions.</div>
     <div class="roster-hint" id="rosterTotals" style="margin-top:4px;color:var(--ink);">Your team totals will build up here as you draft.</div>
@@ -1225,6 +1226,26 @@ const TEAM_POOL = [
     P("Mehmet Okur","C",9.6,5.9,1.0,0.5,0.9,["NBA Champion"]),
     P("Corliss Williamson","PF",9.5,3.2,0.7,0.4,0.3,["NBA Champion"]),
     P("Mike James","PG",6.3,2.2,3.7,1.0,0.0,["NBA Champion"])
+  ]},
+  {team:"Golden State Warriors", season:"2006-07", notable:true, players:[
+    P("Baron Davis","PG",20.1,4.4,8.1,2.1,0.5,[]),
+    P("Al Harrington","PF",17.0,6.4,2.3,1.0,0.3,[]),
+    P("Stephen Jackson","SF",16.8,3.3,4.6,1.3,0.4,[]),
+    P("Monta Ellis","SG",16.5,3.2,4.1,1.7,0.3,[]),
+    P("Jason Richardson","SG",16.0,5.1,3.4,1.1,0.6,[]),
+    P("Mickael Pietrus","SF",11.1,4.5,0.9,0.7,0.8,[]),
+    P("Andris Biedrins","C",9.5,9.3,1.1,0.8,1.7,[]),
+    P("Matt Barnes","SF",9.8,4.6,2.1,1.0,0.5,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"2000-01", notable:true, players:[
+    P("Allen Iverson","SG",31.1,3.8,4.6,2.5,0.3,["MVP","Scoring Champion"]),
+    P("Dikembe Mutombo","C",11.7,12.4,0.8,0.3,2.5,["Defensive Player of the Year"]),
+    P("Aaron McKie","SG",11.6,4.1,5.0,1.4,0.1,["Sixth Man of the Year"]),
+    P("Eric Snow","PG",9.8,3.3,7.4,1.5,0.1,[]),
+    P("Tyrone Hill","PF",9.6,9.0,0.6,0.5,0.4,[]),
+    P("George Lynch","SF",8.4,7.2,1.7,1.2,0.4,[]),
+    P("Toni Kukoc","SF",8.0,3.4,1.9,0.7,0.1,[]),
+    P("Theo Ratliff","C",12.4,8.3,1.2,0.6,3.7,[])
   ]}
 ];
 
@@ -1321,6 +1342,13 @@ assignShootingDefaults();
 let round, roster, best, runs, hitsAt34, bestRecordWins, bestRecordLosses, usedTeams, draftedTeams, spinning, spunTeam, pendingPlayer, pendingCandidateTeam, selectedSlotPos, simState;
 let hardMode = false;
 
+// In hard mode, stats stay hidden while drafting but are revealed once the
+// full 6-man lineup is locked in. In normal mode they're always visible.
+function statsRevealed(){
+  if(!hardMode) return true;
+  return rosterFilledCount() >= 6;
+}
+
 function shuffle(arr){
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){
@@ -1334,15 +1362,35 @@ function composite(p){
   return p.pts + p.reb*1.2 + p.ast*1.5 + p.stl*3 + p.blk*3;
 }
 
+// Each natural position lists every spot that player can legitimately fill.
+// A guard can slide between PG/SG, wings between SG/SF/PF, bigs between PF/C.
+const PLAYABLE_POS = {
+  PG: ["PG", "SG"],
+  SG: ["PG", "SG", "SF"],
+  SF: ["SG", "SF", "PF"],
+  PF: ["SF", "PF", "C"],
+  C:  ["PF", "C"]
+};
+
+function playablePositions(p){
+  return PLAYABLE_POS[p.pos] || [p.pos];
+}
+
 function fitFactor(p, slotPos){
   if(slotPos === "6TH MAN") return {factor:1, label:"in", text:"Bench role"};
+  const canPlay = playablePositions(p);
+  const list = canPlay.join(" / ");
+  if(slotPos === p.pos){
+    return {factor:1, label:"in", text:`Natural ${p.pos} · can also play ${canPlay.filter(x=>x!==p.pos).join(", ") || "—"}`};
+  }
+  if(canPlay.includes(slotPos)){
+    // A legitimate secondary position: full effectiveness, no penalty.
+    return {factor:1, label:"in", text:`Plays ${slotPos} comfortably · natural ${p.pos} (${list})`};
+  }
+  // Truly out of every position they can play — a real penalty.
   const dist = Math.abs(REAL_POS.indexOf(slotPos) - REAL_POS.indexOf(p.pos));
-  if(dist === 0) return {factor:1, label:"in", text:"In position"};
-  const flex = POS_FLEX[p.pos];
-  const penalty = Math.min(0.35, dist * 0.08 / (1+flex));
-  const label = penalty <= 0.06 ? "slight" : "out";
-  const text = label === "slight" ? `Slightly out of position (natural ${p.pos})` : `Out of position (natural ${p.pos})`;
-  return {factor: 1-penalty, label, text};
+  const penalty = Math.min(0.35, dist * 0.08);
+  return {factor: 1-penalty, label:"out", text:`Out of position at ${slotPos} · natural ${p.pos} (plays ${list})`};
 }
 
 function statLine(p){
@@ -1416,7 +1464,7 @@ function renderRosterSlot(pos){
   const fitEl = slot.querySelector(".fit");
   if(entry){
     const fit = fitFactor(entry.p, pos);
-    fitEl.textContent = fit.label==="in" ? "" : (fit.label==="slight" ? "Slight OOP" : "Out of pos.");
+    fitEl.textContent = fit.label === "in" ? "" : "Out of pos.";
     fitEl.className = "fit " + fit.label;
   } else {
     fitEl.textContent = "";
@@ -1429,10 +1477,10 @@ function showPlayerInfo(pos, entry){
   const aw = displayAwards(entry.p.awards);
   panel.innerHTML = `
     <div class="pi-name">${entry.p.name} <span style="color:var(--ink-dim);font-weight:400;">— ${pos}</span></div>
-    <div class="pi-meta">${entry.team} ${entry.season} &middot; natural position ${entry.p.pos}</div>
-    ${hardMode ? `<div class="pi-stats" style="color:var(--ink-dim);">Stats hidden (Hard mode)</div>` : `<div class="pi-stats">${statLine(entry.p)}</div>`}
+    <div class="pi-meta">${entry.team} ${entry.season} &middot; can play ${playablePositions(entry.p).join(" / ")}</div>
+    ${statsRevealed() ? `<div class="pi-stats">${statLine(entry.p)}</div>` : `<div class="pi-stats" style="color:var(--ink-dim);">Stats hidden (Hard mode)</div>`}
     <div class="pi-fit ${fit.label}">${fit.text}</div>
-    ${(!hardMode && aw.length) ? `<div class="pi-awards">${aw.join(" · ")}</div>` : ""}
+    ${(statsRevealed() && aw.length) ? `<div class="pi-awards">${aw.join(" · ")}</div>` : ""}
   `;
   panel.classList.add("show");
 }
@@ -1573,6 +1621,12 @@ function nextRound(){
     simNextBtn.textContent = "Simulate first game";
     newBtn.classList.remove("primary");
     newBtn.classList.add("dimmed");
+    // Lineup complete: in hard mode this reveals the previously-hidden stats.
+    POSITIONS.forEach(p=> renderRosterSlot(p));
+    updateRosterTotals();
+    if(hardMode){
+      setRosterHint("Lineup locked in &mdash; stats are now revealed. See how your blind picks stack up before you simulate.");
+    }
     return;
   }
   document.getElementById("roundLabel").textContent = `Pick ${round+1} / 6`;
@@ -1671,11 +1725,12 @@ function showCandidates(t){
       if(taken){
         card.innerHTML = `<div class="name">${p.name}</div><div class="line">Already rostered</div>`;
       } else {
+        const posLine = `<div class="pos-line">Can play: ${playablePositions(p).join(" / ")}</div>`;
         if(hardMode){
-          card.innerHTML = `<div class="name">${p.name}</div><div class="line" style="color:var(--ink-dim);">${p.pos} · stats hidden</div>`;
+          card.innerHTML = `<div><div class="name">${p.name}</div>${posLine}</div><div class="line" style="color:var(--ink-dim);">stats hidden</div>`;
         } else {
           const aw = displayAwards(p.awards);
-          card.innerHTML = `<div><div class="name">${p.name}</div>${aw.length?`<div class="awards">${aw.join(" · ")}</div>`:""}</div><div class="line">${statLine(p)}</div>`;
+          card.innerHTML = `<div><div class="name">${p.name}</div>${posLine}${aw.length?`<div class="awards">${aw.join(" · ")}</div>`:""}</div><div class="line">${statLine(p)}</div>`;
         }
         card.addEventListener("click", ()=> selectCandidate(t, p));
       }
@@ -1691,22 +1746,23 @@ function updateRosterTotals(){
   if(!el) return;
   const players = Object.values(roster).map(r=>r.p);
   if(!players.length){
-    el.textContent = hardMode ? "Hard mode: team stats stay hidden until your run is over." : "Your team totals will build up here as you draft.";
+    el.textContent = hardMode ? "Hard mode: team stats stay hidden until your lineup is complete." : "Your team totals will build up here as you draft.";
     return;
   }
-  if(hardMode){
-    el.innerHTML = `<span style="color:var(--gold);">${players.length}/6 drafted</span> · totals hidden in Hard mode`;
+  if(!statsRevealed()){
+    el.innerHTML = `<span style="color:var(--gold);">${players.length}/6 drafted</span> · totals hidden until your lineup is set`;
     return;
   }
   const totals = teamTotals(players);
-  el.innerHTML = `<span style="color:var(--gold);">Your team so far (${players.length}/6):</span> ${totals.pts.toFixed(1)} PTS · ${totals.reb.toFixed(1)} REB · ${totals.ast.toFixed(1)} AST · ${totals.stl.toFixed(1)} STL · ${totals.blk.toFixed(1)} BLK`;
+  const prefix = (hardMode && players.length >= 6) ? "Lineup locked in" : `Your team so far (${players.length}/6)`;
+  el.innerHTML = `<span style="color:var(--gold);">${prefix}:</span> ${totals.pts.toFixed(1)} PTS · ${totals.reb.toFixed(1)} REB · ${totals.ast.toFixed(1)} AST · ${totals.stl.toFixed(1)} STL · ${totals.blk.toFixed(1)} BLK`;
 }
 
 function selectCandidate(t, p){
   pendingPlayer = p;
   pendingCandidateTeam = t;
   const wrap = document.getElementById("candidatesWrap");
-  wrap.innerHTML = `<div class="picking-banner">You picked <b>${p.name}</b> (natural position: ${p.pos}). Tap an open slot in <b>Your lineup</b> below to place him.<button class="undo-pick" id="undoPickBtn">← Pick someone else</button></div>`;
+  wrap.innerHTML = `<div class="picking-banner">You picked <b>${p.name}</b> (can play ${playablePositions(p).join(" / ")}). Tap an open slot in <b>Your lineup</b> below to place him.<button class="undo-pick" id="undoPickBtn">← Pick someone else</button></div>`;
   document.getElementById("undoPickBtn").addEventListener("click", cancelCandidate);
   highlightPlaceable();
 }
@@ -1837,11 +1893,14 @@ function effectiveComposite(arr){
 }
 
 function pWinFor(avg, gameIndex){
-  // avg now sits on the Game Score scale (a strong lineup averages ~14-20).
-  const base = Math.min(0.995, Math.max(0.70, 0.80 + (avg-13)/22));
-  const earlyBonus = Math.max(0, 0.13 - (gameIndex||0) * 0.022);
-  const decay = Math.min(0.35, (gameIndex||0) * 0.008);
-  return Math.max(0.25, Math.min(0.997, base + earlyBonus - decay));
+  // avg sits on the Game Score scale (a strong lineup averages ~14-20).
+  const base = Math.min(0.995, Math.max(0.72, 0.83 + (avg-13)/20));
+  // A fading early boost, then a gentle decay that levels off so late-streak
+  // games stay genuinely winnable for a strong roster (past ~game 18 the
+  // per-game penalty stops growing).
+  const earlyBonus = Math.max(0, 0.12 - (gameIndex||0) * 0.020);
+  const decay = Math.min(0.14, (gameIndex||0) * 0.006);
+  return Math.max(0.30, Math.min(0.997, base + earlyBonus - decay));
 }
 
 function genScore(won, pWin){
@@ -2023,7 +2082,8 @@ function revealGame(g, item){
   }
 
   const arr2 = rosterArray();
-  const injuredPick = arr2.find(r => Math.random() < INJ_RATE[r.p.injuryRisk||"medium"]);
+  const injMult = hardMode ? 1.5 : 1;
+  const injuredPick = arr2.find(r => Math.random() < INJ_RATE[r.p.injuryRisk||"medium"] * injMult);
   if(injuredPick){
     showInjuryEvent(injuredPick);
     return;
@@ -2267,6 +2327,8 @@ function shortAnalysis(arr, streakLen){
   const facilitator = arr.find(r=> r.p.ast >= 5.5);
   const rebounder = arr.find(r=> r.p.reb >= 8);
   const pureScorer = arr.find(r=> r.p.pts >= 24);
+  const shooter = arr.find(r=> r.p.tp !== null && r.p.tp !== undefined && r.p.tp >= 37);
+  const rimProtector = arr.find(r=> r.p.blk >= 1.5);
   const oop = arr.filter(r=> fitFactor(r.p,r.pos).label!=="in");
 
   const issues = [];
@@ -2279,21 +2341,34 @@ function shortAnalysis(arr, streakLen){
   if(!pureScorer) issues.push("no featured go-to scorer for when a possession broke down late in close games");
   if(oop.length >= 2) issues.push(`${oop.length} players stuck out of natural position, quietly bleeding efficiency every game`);
 
+  // Softer "could be better" notes, used when there's no glaring structural hole.
+  const improvements = [];
+  if(!shooter) improvements.push("adding a real floor-spacer (someone shooting 37%+ from three) would open up driving lanes and lift everyone's efficiency");
+  if(!rimProtector) improvements.push("a rim protector who blocks 1.5+ shots a game would tighten the defense in close ones");
+  if(oop.length === 1) improvements.push(`${oop[0].p.name.split(" ").pop()} was slightly out of position — a more natural fit there would squeeze out a bit more`);
+  if(scorers.length === 3) improvements.push("you're leaning on three scorers who all want touches; swapping one for a connector could smooth the offense");
+  if(pureScorer && !facilitator) improvements.push("you have the scoring but not the passing to feed it consistently — a lead guard would raise the ceiling");
+
   const positives = [];
   if(facilitator) positives.push(`${facilitator.p.name.split(" ").pop()} kept the offense honest as a real facilitator`);
   if(rebounder) positives.push(`${rebounder.p.name.split(" ").pop()} controlled the glass`);
   if(pureScorer && scorers.length < 4) positives.push(`${pureScorer.p.name.split(" ").pop()} gave the team a legitimate go-to scorer without crowding everyone else out`);
-  if(!issues.length) positives.push("every role was covered without redundancy");
+  if(shooter) positives.push(`${shooter.p.name.split(" ").pop()} provided the spacing that makes everything else work`);
+  if(!positives.length) positives.push("the core pieces were solid enough to string wins together");
 
   let text = "";
-  text += positives.length ? `What worked: ${positives.slice(0,2).join("; ")}. ` : "Nothing on this roster stood out as a real strength. ";
+  text += `What worked: ${positives.slice(0,2).join("; ")}. `;
 
   if(issues.length){
-    text += `What didn't: ${issues.slice(0,2).join("; ")}.`;
-  } else if(streakLen < 20){
-    text += "Nothing structurally wrong here, either — a streak this short with a roster this solid was mostly bad luck. Even a great team's win probability compounds fast over dozens of games, so one or two bad bounces early can end a run that should've gone longer.";
+    text += `What to improve: ${issues.slice(0,2).join("; ")}.`;
+  } else if(improvements.length){
+    // No glaring structural hole, but still give an actionable upgrade.
+    text += `What to improve: ${improvements.slice(0,2).join("; ")}.`;
+    if(streakLen < 20){
+      text += " Some of a short run also comes down to variance — win probability compounds over a long schedule, so a couple of early bad bounces can end a run sooner than the roster deserved.";
+    }
   } else {
-    text += "This roster genuinely had no real hole, which is exactly why it ran as long as it did.";
+    text += "What to improve: honestly, very little — this roster covered every role. To go even longer you'd just need the bounces to fall your way in the handful of coin-flip games late in the streak.";
   }
 
   return text;
@@ -2504,18 +2579,43 @@ function showMilestone(msg){
   setTimeout(()=>{ banner.style.display = "none"; }, 3400);
 }
 
-function shareResult(){
+function buildShareText(){
   const streakLen = window.__lastStreak || 0;
   const rec = window.__lastRecord || {wins:0, losses:34};
-  const lineupStr = rosterArray().map(r=>{
-    const abbr = r.pos === "6TH MAN" ? "6" : r.pos;
-    return `${r.p.name} (${abbr})`;
-  }).join(", ");
-  const text = `🔥Streak: ${streakLen}\n📆 Record: ${rec.wins}-${rec.losses}\n🤝 Lineup: ${lineupStr}\n🔗 Play: ${GAME_URL}`;
-  navigator.clipboard?.writeText(text).catch(()=>{});
+  const lineupLines = rosterArray().map(r=>{
+    const abbr = r.pos === "6TH MAN" ? "6th" : r.pos;
+    return `   ${abbr.padEnd(3)} ${r.p.name} — ${r.season}`;
+  }).join("\n");
+  return `🔥 THE STREAK 🔥\n\n`
+    + `Streak:  ${streakLen} game${streakLen===1?"":"s"}\n`
+    + `Record:  ${rec.wins}-${rec.losses}\n\n`
+    + `Lineup:\n${lineupLines}\n\n`
+    + `▶ Play: ${GAME_URL}`;
+}
+
+async function shareResult(){
+  const text = buildShareText();
   const btn = document.getElementById("shareBtn");
   const original = btn.textContent;
-  btn.textContent = "Copied to clipboard";
+
+  // Prefer the native share sheet so results can go straight to a person
+  // (Messages, WhatsApp, email, etc.). Falls back to clipboard where unsupported.
+  if(navigator.share){
+    try {
+      await navigator.share({ title: "The Streak", text });
+      return;
+    } catch(err){
+      // User cancelled the share sheet, or it failed — fall through to copy.
+      if(err && err.name === "AbortError") return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = "Copied to clipboard";
+  } catch(e){
+    btn.textContent = "Couldn't share — try again";
+  }
   setTimeout(()=>{ btn.textContent = original; }, 1800);
 }
 
