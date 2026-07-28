@@ -90,6 +90,18 @@
   }
   .intro-start:hover{filter:brightness(1.08);}
   .intro-start:active{transform:translateY(1px);}
+  .mode-select{margin-bottom:22px;}
+  .mode-select-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:10px;}
+  .mode-options{display:flex;gap:10px;}
+  .mode-opt{
+    flex:1;text-align:left;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;transition:border-color .15s,background .15s;
+  }
+  .mode-opt.selected{border-color:var(--gold);background:rgba(212,175,55,.08);}
+  .mode-opt-name{display:block;font-family:'Oswald',sans-serif;font-size:16px;color:var(--ink);margin-bottom:3px;}
+  .mode-opt-desc{display:block;font-size:11.5px;line-height:1.4;color:var(--ink-dim);}
+  @media(max-width:480px){ .mode-options{flex-direction:column;} }
   @media (max-width:520px){
     .intro-card{padding:28px 20px;}
     .intro-title{font-size:42px;}
@@ -139,6 +151,26 @@
   }
   .gauge-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
   .streak-num{font-family:'Oswald',sans-serif;font-size:44px;font-weight:700;color:var(--flame1);line-height:1;}
+  .streak-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-left:8px;}
+  .undo-pick{
+    display:block;margin-top:10px;background:transparent;border:1px solid var(--line);
+    color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:11px;
+    padding:6px 12px;border-radius:6px;cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .undo-pick:hover{border-color:var(--gold);color:var(--gold);}
+  .mode-badge{
+    display:inline-block;margin-left:8px;font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.06em;padding:5px 10px;border-radius:6px;
+    border:1px solid var(--line);color:var(--ink-dim);vertical-align:middle;
+  }
+  .mode-badge.hard{border-color:var(--flame1);color:var(--flame2);}
+  .switch-mode-btn{
+    background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;
+    padding:5px 10px;border-radius:6px;cursor:pointer;margin-left:6px;vertical-align:middle;
+    transition:border-color .15s,color .15s;
+  }
+  .switch-mode-btn:hover{border-color:var(--flame1);color:var(--flame2);}
   .streak-target{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);letter-spacing:.05em;}
   .gauge-track{position:relative;height:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
   .gauge-fill{height:100%;width:0%;background:linear-gradient(90deg, var(--flame1), var(--flame2));transition:width .4s ease;}
@@ -207,6 +239,16 @@
     transition:border-color .15s ease, color .15s ease;
   }
   .howto-btn:hover{border-color:var(--gold); color:var(--gold);}
+  .reset-best{
+    background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;
+    padding:5px 10px;border-radius:5px;cursor:pointer;
+  }
+  .reset-best:hover{border-color:var(--miss);color:var(--miss);}
+  .save-note{
+    display:block;font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--ink-dim);margin-bottom:8px;
+  }
   .player-info{
     display:none;
     margin-top:10px;
@@ -260,6 +302,28 @@
   @keyframes suspensePulse{0%,100%{border-color:var(--line);}50%{border-color:var(--gold);}}
   .glog-item.bonus{outline:1px dashed var(--flame1);}
   .chem-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .sim-streak-tracker{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    background:linear-gradient(135deg, rgba(255,107,53,.12), rgba(255,107,53,.03));
+    border:1px solid rgba(255,107,53,.35);border-radius:10px;
+    padding:14px 18px;margin-bottom:14px;
+  }
+  .sst-main{display:flex;align-items:baseline;gap:10px;}
+  .sst-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:46px;line-height:1;color:var(--flame1);}
+  .sst-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--flame2);}
+  .sst-side{display:flex;gap:20px;}
+  .sst-stat{text-align:center;}
+  .sst-stat-num{display:block;font-family:'Oswald',sans-serif;font-size:22px;color:var(--ink);line-height:1;}
+  .sst-stat-label{display:block;font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:4px;}
+  .sim-streak-tracker.broken{border-color:var(--miss);background:linear-gradient(135deg, rgba(225,75,75,.12), rgba(225,75,75,.03));}
+  .sim-streak-tracker.broken .sst-num{color:var(--miss);}
+  .sim-streak-tracker.broken .sst-label{color:var(--miss);}
+  @media(max-width:480px){
+    .sim-streak-tracker{padding:12px 14px;gap:10px;}
+    .sst-num{font-size:38px;}
+    .sst-side{gap:14px;}
+    .sst-stat-num{font-size:18px;}
+  }
   .chem-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);white-space:nowrap;}
   .chem-track{flex:1;height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
   .chem-fill{height:100%;width:55%;background:linear-gradient(90deg,#5B8CFF,#3FBF7F);transition:width .5s ease;}
@@ -312,14 +376,32 @@
   .lb-row .lb-lineup{color:var(--ink-dim);flex:1;text-align:right;font-size:11px;}
   .lb-row.gold-run{border-color:var(--gold);}
   @media(max-width:480px){
-    .roster-grid{grid-template-columns:repeat(3,1fr);}
+    body{padding:20px 12px 70px;}
+    .panel{padding:16px 14px;}
+    .roster-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+    .slot{padding:10px 4px;min-height:74px;}
     .best-squad{grid-template-columns:1fr;}
     .event-compare{grid-template-columns:1fr;}
-    h1{font-size:38px;}
+    h1{font-size:36px;}
     .streak-num{font-size:36px;}
-    .candidate{flex-direction:column;align-items:flex-start;}
-    .candidate .line{text-align:left;}
+    .candidate{flex-direction:column;align-items:flex-start;padding:12px;min-height:auto;}
+    .candidate .line{text-align:left;margin-top:4px;}
     .slot-picker{grid-template-columns:repeat(2,1fr);}
+    .actions{flex-direction:column;}
+    .btn{padding:15px;font-size:15px;}
+    .spin-btn{padding:15px 20px;font-size:16px;}
+    .stats-bar{padding:14px 10px;}
+    .stats-bar .n{font-size:22px;}
+    .stats-bar .l{font-size:9px;}
+    .gauge-wrap{padding:16px 16px;}
+    .event-actions{flex-direction:column;}
+    .event-btn{width:100%;}
+    .mode-badge{display:inline-block;margin:8px 0 0 0;}
+    .sub{font-size:13px;}
+  }
+  @media(max-width:360px){
+    .roster-grid{grid-template-columns:repeat(2,1fr);}
+    h1{font-size:30px;}
   }
 </style>
 </head>
@@ -363,6 +445,20 @@
 
     <div class="intro-goal"><span>🔥</span> Goal: string together all 34 wins. See where your run would rank among the greatest streaks in NBA history.</div>
 
+    <div class="mode-select">
+      <div class="mode-select-label">Choose a mode</div>
+      <div class="mode-options">
+        <button class="mode-opt selected" id="modeNormal">
+          <span class="mode-opt-name">Normal</span>
+          <span class="mode-opt-desc">Player stats are shown as you draft.</span>
+        </button>
+        <button class="mode-opt" id="modeHard">
+          <span class="mode-opt-name">Hard mode</span>
+          <span class="mode-opt-desc">Stats are hidden and positions lock once placed — draft on name and reputation alone.</span>
+        </button>
+      </div>
+    </div>
+
     <button class="intro-start" id="introStart">Start drafting</button>
   </div>
 </div>
@@ -371,9 +467,14 @@
   <h1>The Streak</h1>
   <p class="sub">The 1971-72 Lakers won 33 straight &mdash; still the NBA record. Spin for a random real team from any season since 1970, pick a player, then choose which spot they play. Six picks, six spins, then run the Lakers' real schedule plus the game that actually ended it &mdash; with injuries, trade offers, and a chance to gamble at every milestone.</p>
   <button class="howto-btn" id="howtoBtn">How to play</button>
+  <span class="mode-badge" id="modeBadge">Normal mode</span>
+  <button class="switch-mode-btn" id="switchModeBtn">Switch to Hard mode</button>
 
   <div class="gauge-wrap">
-    <div class="gauge-top"><span class="streak-num" id="streakNum">0</span><span class="streak-target">target: 34</span></div>
+    <div class="gauge-top">
+      <span><span class="streak-num" id="streakNum">0</span><span class="streak-label">current streak</span></span>
+      <span class="streak-target">target: 34</span>
+    </div>
     <div class="gauge-track"><div class="gauge-fill" id="gaugeFill"></div></div>
     <div class="gauge-ticks"><span>0</span><span>10</span><span>20</span><span>33</span><span>34</span></div>
   </div>
@@ -401,6 +502,16 @@
 
   <div class="panel" id="simPanel" style="display:none;">
     <div class="panel-head"><span>Running the schedule</span><span id="simStatus"></span></div>
+    <div class="sim-streak-tracker">
+      <div class="sst-main">
+        <span class="sst-num" id="simStreakNum">0</span>
+        <span class="sst-label">current streak</span>
+      </div>
+      <div class="sst-side">
+        <div class="sst-stat"><span class="sst-stat-num" id="simRecordOut">0-0</span><span class="sst-stat-label">record</span></div>
+        <div class="sst-stat"><span class="sst-stat-num" id="simToGoOut">34</span><span class="sst-stat-label">to reach 34</span></div>
+      </div>
+    </div>
     <div class="step-guide">Chemistry rises as you win and drops on injuries, trades, and gambles &mdash; higher chemistry means better odds. Injuries, trade offers, and milestone gambles can pop up between games; each one pauses for your decision.</div>
     <div class="chem-bar">
       <span class="chem-label">Team chemistry</span>
@@ -429,9 +540,14 @@
   <div class="stats-bar">
     <div><div class="n" id="bestOut">0</div><div class="l">Best streak</div><div class="sub-l">from game 1</div></div>
     <div><div class="n" id="bestRecordOut">—</div><div class="l">Best record</div></div>
+    <div><div class="n" id="runsOut">—</div><div class="l">Runs played</div><div class="sub-l">all time</div></div>
+  </div>
+  <div style="text-align:center;margin:-10px 0 18px;">
+    <span class="save-note" id="saveNote"></span>
+    <button class="reset-best" id="resetBestBtn" style="display:none;">Reset personal best</button>
   </div>
 
-  <div class="step-guide" id="simGuide" style="text-align:center;">Once all six spots are filled: <b>Simulate next game</b> plays one game at a time, or <b>Simulate full schedule</b> runs the whole thing automatically.</div>
+  <div class="step-guide" id="simGuide" style="text-align:center;">Once all six spots are filled: <b>Simulate first game</b> plays one game at a time, or <b>Simulate full schedule</b> runs the whole thing automatically.</div>
   <div class="actions">
     <button class="btn" id="simNextBtn" disabled>Simulate next game</button>
     <button class="btn" id="simBtn" disabled>Simulate full schedule</button>
@@ -448,7 +564,7 @@
 
 <script>
 // Replace with your hosted URL once this file is deployed somewhere public.
-const GAME_URL = "TheStreak.game";
+const GAME_URL = "the-streak.html";
 
 const OPPONENTS = [
   {n:1, date:"Nov 5, 1971", opp:"Baltimore Bullets"},
@@ -1049,10 +1165,75 @@ const TEAM_POOL = [
     P("Dennis Schroder","PG",10.0,2.1,4.1,0.6,0.1,[]),
     P("Mike Scott","PF",7.8,2.9,1.1,0.4,0.0,[]),
     P("Thabo Sefolosha","SF",5.3,4.3,1.4,1.0,0.4,[])
+  ]},
+  {team:"Memphis Grizzlies", season:"2012-13", notable:true, players:[
+    P("Zach Randolph","PF",15.4,11.2,1.4,0.8,0.4,[]),
+    P("Mike Conley","PG",14.6,2.8,6.1,2.2,0.3,[]),
+    P("Marc Gasol","C",14.1,7.8,4.0,1.0,1.7,["Defensive Player of the Year"]),
+    P("Tony Allen","SG",8.9,4.6,1.2,1.5,0.6,[]),
+    P("Tayshaun Prince","SF",8.8,4.2,2.3,0.7,0.3,[]),
+    P("Jerryd Bayless","PG",8.7,2.2,3.3,0.7,0.2,[]),
+    P("Quincy Pondexter","SF",6.4,2.2,1.0,0.6,0.1,[]),
+    P("Darrell Arthur","PF",6.1,2.9,0.6,0.4,0.6,[])
+  ]},
+  {team:"Indiana Pacers", season:"2013-14", notable:true, players:[
+    P("Paul George","SF",21.7,6.8,3.5,1.9,0.3,[]),
+    P("David West","PF",14.0,6.8,2.8,0.8,0.9,[]),
+    P("Lance Stephenson","SG",13.8,7.2,4.6,0.7,0.1,[]),
+    P("Roy Hibbert","C",10.8,6.6,1.1,0.4,2.2,[]),
+    P("George Hill","PG",10.3,3.7,3.5,1.0,0.3,[]),
+    P("Luis Scola","PF",7.6,4.8,1.0,0.3,0.2,[]),
+    P("C.J. Watson","PG",6.6,1.6,1.7,1.0,0.1,[]),
+    P("Danny Granger","SF",8.3,3.6,1.1,0.3,0.4,[])
+  ]},
+  {team:"New Orleans Pelicans", season:"2017-18", notable:true, players:[
+    P("Anthony Davis","PF",28.1,11.1,2.3,1.5,2.6,[]),
+    P("DeMarcus Cousins","C",25.2,12.9,5.4,1.6,1.6,[],"high"),
+    P("Jrue Holiday","SG",19.0,4.5,6.0,1.5,0.8,[]),
+    P("Nikola Mirotic","PF",14.6,8.2,1.4,1.0,0.9,[]),
+    P("E'Twaun Moore","SG",12.5,2.9,2.3,1.0,0.1,[]),
+    P("Rajon Rondo","PG",8.3,4.0,8.2,1.1,0.2,[]),
+    P("Darius Miller","SF",7.8,2.0,1.4,0.3,0.2,[]),
+    P("Ian Clark","PG",7.4,1.7,1.5,0.4,0.1,[])
+  ]},
+  {team:"Charlotte Hornets", season:"2015-16", notable:true, players:[
+    P("Kemba Walker","PG",20.9,4.4,5.2,1.6,0.5,[]),
+    P("Nicolas Batum","SF",14.9,6.1,5.8,0.9,0.6,[]),
+    P("Al Jefferson","C",12.0,6.4,1.5,0.6,0.9,[]),
+    P("Marvin Williams","PF",11.7,6.4,1.4,0.7,1.0,[]),
+    P("Jeremy Lin","PG",11.7,3.2,3.0,0.7,0.5,[]),
+    P("Courtney Lee","SG",8.9,3.1,2.1,1.2,0.4,[]),
+    P("Cody Zeller","C",8.7,6.2,1.0,0.8,0.9,[]),
+    P("Frank Kaminsky","PF",7.5,4.1,1.2,0.5,0.5,[])
+  ]},
+  {team:"San Antonio Spurs", season:"2025-26", notable:true, players:[
+    P("Victor Wembanyama","C",25.0,11.5,3.1,1.0,3.1,[]),
+    P("De'Aaron Fox","PG",18.6,4.3,6.2,1.2,0.3,[]),
+    P("Stephon Castle","SG",16.7,5.3,7.4,1.1,0.3,[]),
+    P("Devin Vassell","SF",13.9,3.4,2.5,0.9,0.4,[]),
+    P("Keldon Johnson","SF",13.2,5.4,2.0,0.7,0.2,[]),
+    P("Dylan Harper","PG",11.0,3.2,3.9,0.8,0.3,[]),
+    P("Julian Champagnie","SF",9.5,5.8,1.3,0.7,0.5,[]),
+    P("Luke Kornet","C",7.0,6.1,1.4,0.5,1.0,[])
+  ]},
+  {team:"Detroit Pistons", season:"2003-04", notable:true, players:[
+    P("Chauncey Billups","PG",16.9,3.5,5.7,1.1,0.1,["Finals MVP","NBA Champion"]),
+    P("Richard Hamilton","SG",17.6,3.6,4.0,1.3,0.2,["NBA Champion"]),
+    P("Rasheed Wallace","PF",13.7,7.0,1.8,1.1,2.0,["NBA Champion"]),
+    P("Ben Wallace","C",9.5,12.4,1.7,1.8,3.0,["NBA Champion"]),
+    P("Tayshaun Prince","SF",10.3,4.8,2.3,0.8,0.8,["NBA Champion"]),
+    P("Mehmet Okur","C",9.6,5.9,1.0,0.5,0.9,["NBA Champion"]),
+    P("Corliss Williamson","PF",9.5,3.2,0.7,0.4,0.3,["NBA Champion"]),
+    P("Mike James","PG",6.3,2.2,3.7,1.0,0.0,["NBA Champion"])
   ]}
 ];
 
 const TEAM_COLORS = {
+  "Detroit Pistons": {bg:"#2A0A16", text:"#E0607A", border:"#C8102E"},
+  "Charlotte Hornets": {bg:"#0A2320", text:"#3FBFA8", border:"#1D9E88"},
+  "New Orleans Pelicans": {bg:"#1A1420", text:"#B08CC4", border:"#85714D"},
+  "Memphis Grizzlies": {bg:"#0E1A33", text:"#6B8CC4", border:"#5D76A9"},
+  "Indiana Pacers": {bg:"#2A1A05", text:"#FDBB30", border:"#FDBB30"},
   "Atlanta Hawks": {bg:"#2E0A10", text:"#E8616E", border:"#C8102E"},
   "Los Angeles Clippers": {bg:"#0A1E3D", text:"#5A8AD4", border:"#1D428A"},
   "Toronto Raptors": {bg:"#2A0810", text:"#D45A6A", border:"#CE1141"},
@@ -1138,6 +1319,7 @@ function assignShootingDefaults(){
 assignShootingDefaults();
 
 let round, roster, best, runs, hitsAt34, bestRecordWins, bestRecordLosses, usedTeams, draftedTeams, spinning, spunTeam, pendingPlayer, pendingCandidateTeam, selectedSlotPos, simState;
+let hardMode = false;
 
 function shuffle(arr){
   const a=[...arr];
@@ -1190,6 +1372,7 @@ function startDraft(){
   simNextBtn.disabled = true;
   simBtn.classList.remove("glow");
   simNextBtn.classList.remove("glow");
+  simNextBtn.textContent = "Simulate first game";
   simBtn.classList.add("primary");
   newBtn.classList.remove("dimmed");
   newBtn.classList.add("primary");
@@ -1227,7 +1410,7 @@ function renderRosterSlot(pos){
   const entry = roster[pos];
   slot.classList.toggle("filled", !!entry);
   slot.classList.toggle("selected", selectedSlotPos === pos);
-  slot.draggable = !!entry;
+  slot.draggable = !!entry && !hardMode;
   slot.querySelector(".who").textContent = entry ? entry.p.name : "Open";
   slot.querySelector(".from").textContent = entry ? `${entry.team} ${entry.season}` : "";
   const fitEl = slot.querySelector(".fit");
@@ -1247,9 +1430,9 @@ function showPlayerInfo(pos, entry){
   panel.innerHTML = `
     <div class="pi-name">${entry.p.name} <span style="color:var(--ink-dim);font-weight:400;">— ${pos}</span></div>
     <div class="pi-meta">${entry.team} ${entry.season} &middot; natural position ${entry.p.pos}</div>
-    <div class="pi-stats">${statLine(entry.p)}</div>
+    ${hardMode ? `<div class="pi-stats" style="color:var(--ink-dim);">Stats hidden (Hard mode)</div>` : `<div class="pi-stats">${statLine(entry.p)}</div>`}
     <div class="pi-fit ${fit.label}">${fit.text}</div>
-    ${aw.length ? `<div class="pi-awards">${aw.join(" · ")}</div>` : ""}
+    ${(!hardMode && aw.length) ? `<div class="pi-awards">${aw.join(" · ")}</div>` : ""}
   `;
   panel.classList.add("show");
 }
@@ -1271,6 +1454,14 @@ function slotClicked(pos){
   // Placing a freshly drafted player takes priority.
   if(pendingPlayer){
     if(!roster[pos]) placePlayer(pos);
+    return;
+  }
+
+  // Hard mode: positions are locked once placed. Tapping only shows stats
+  // (which are themselves hidden in hard mode), never a swap.
+  if(hardMode){
+    const entry = roster[pos];
+    if(entry) showPlayerInfo(pos, entry);
     return;
   }
 
@@ -1322,12 +1513,17 @@ function setRosterHint(html){
 }
 
 function resetRosterHint(){
-  setRosterHint("Tap a player to see their stats and start a swap, then tap another slot to switch their positions.");
+  if(hardMode){
+    setRosterHint("Hard mode: choose each player's spot carefully — positions lock once placed and can't be swapped.");
+  } else {
+    setRosterHint("Tap a player to see their stats and start a swap, then tap another slot to switch their positions.");
+  }
 }
 
 let draggedPos = null;
 
 function onSlotDragStart(e, pos){
+  if(hardMode){ e.preventDefault(); return; }
   if(!roster[pos]){ e.preventDefault(); return; }
   if(selectedSlotPos !== null) clearSwapSelection();
   draggedPos = pos;
@@ -1374,6 +1570,7 @@ function nextRound(){
     simNextBtn.disabled = false;
     simBtn.classList.add("primary","glow");
     simNextBtn.classList.add("glow");
+    simNextBtn.textContent = "Simulate first game";
     newBtn.classList.remove("primary");
     newBtn.classList.add("dimmed");
     return;
@@ -1474,8 +1671,12 @@ function showCandidates(t){
       if(taken){
         card.innerHTML = `<div class="name">${p.name}</div><div class="line">Already rostered</div>`;
       } else {
-        const aw = displayAwards(p.awards);
-        card.innerHTML = `<div><div class="name">${p.name}</div>${aw.length?`<div class="awards">${aw.join(" · ")}</div>`:""}</div><div class="line">${statLine(p)}</div>`;
+        if(hardMode){
+          card.innerHTML = `<div class="name">${p.name}</div><div class="line" style="color:var(--ink-dim);">${p.pos} · stats hidden</div>`;
+        } else {
+          const aw = displayAwards(p.awards);
+          card.innerHTML = `<div><div class="name">${p.name}</div>${aw.length?`<div class="awards">${aw.join(" · ")}</div>`:""}</div><div class="line">${statLine(p)}</div>`;
+        }
         card.addEventListener("click", ()=> selectCandidate(t, p));
       }
       list.appendChild(card);
@@ -1490,7 +1691,11 @@ function updateRosterTotals(){
   if(!el) return;
   const players = Object.values(roster).map(r=>r.p);
   if(!players.length){
-    el.textContent = "Your team totals will build up here as you draft.";
+    el.textContent = hardMode ? "Hard mode: team stats stay hidden until your run is over." : "Your team totals will build up here as you draft.";
+    return;
+  }
+  if(hardMode){
+    el.innerHTML = `<span style="color:var(--gold);">${players.length}/6 drafted</span> · totals hidden in Hard mode`;
     return;
   }
   const totals = teamTotals(players);
@@ -1501,8 +1706,16 @@ function selectCandidate(t, p){
   pendingPlayer = p;
   pendingCandidateTeam = t;
   const wrap = document.getElementById("candidatesWrap");
-  wrap.innerHTML = `<div class="picking-banner">You picked <b>${p.name}</b> (natural position: ${p.pos}). Tap an open slot in <b>Your lineup</b> below to place him.</div>`;
+  wrap.innerHTML = `<div class="picking-banner">You picked <b>${p.name}</b> (natural position: ${p.pos}). Tap an open slot in <b>Your lineup</b> below to place him.<button class="undo-pick" id="undoPickBtn">← Pick someone else</button></div>`;
+  document.getElementById("undoPickBtn").addEventListener("click", cancelCandidate);
   highlightPlaceable();
+}
+
+function cancelCandidate(){
+  pendingPlayer = null;
+  clearPlaceable();
+  // Re-show the roster for the team we just spun so the player can choose again.
+  if(pendingCandidateTeam) showCandidates(pendingCandidateTeam);
 }
 
 function placePlayer(pos){
@@ -1660,10 +1873,10 @@ function initSimUI(){
     log.appendChild(item);
   });
 
-  runs = (runs||0) + 1;
   simState = {i:0, streakLen:0, milestonesHit:new Set(), hasLost:false, overallWins:0, mode:"manual", processing:false, chemistry:55, injuredOut:[], paused:false};
   updateGauge(0);
   updateChemistryUI();
+  updateSimTracker();
 }
 
 function updateChemistryUI(){
@@ -1675,11 +1888,27 @@ function updateChemistryUI(){
   if(fill) fill.style.width = pct + "%";
 }
 
+function updateSimTracker(){
+  if(!simState) return;
+  const numEl = document.getElementById("simStreakNum");
+  const recEl = document.getElementById("simRecordOut");
+  const toGoEl = document.getElementById("simToGoOut");
+  const tracker = document.querySelector(".sim-streak-tracker");
+  if(numEl) numEl.textContent = simState.streakLen;
+  if(recEl){
+    const losses = simState.i - simState.overallWins;
+    recEl.textContent = `${simState.overallWins}-${losses}`;
+  }
+  if(toGoEl) toGoEl.textContent = Math.max(0, 34 - simState.streakLen);
+  if(tracker) tracker.classList.toggle("broken", simState.hasLost);
+}
+
 function simNextGame(){
   if(!simState) initSimUI();
   if(simState.processing) return;
   simState.mode = "manual";
   simState.processing = true;
+  document.getElementById("simNextBtn").textContent = "Simulate next game";
   document.getElementById("pauseBtn").style.display = "none";
   document.getElementById("simNextBtn").disabled = true;
   document.getElementById("simStatus").textContent = `Game ${simState.i+1} of ${OPPONENTS.length}`;
@@ -1780,6 +2009,7 @@ function revealGame(g, item){
   }
   updateChemistryUI();
   simState.i++;
+  updateSimTracker();
 
   if(simState.hasLost){
     advanceSim();
@@ -2127,6 +2357,74 @@ function launchConfetti(){
 
 function fmtRecord(w,l){ return `${w}-${l}`; }
 
+// ---- Persistent personal best -------------------------------------------
+// Wrapped in try/catch: localStorage throws in private-browsing mode and is
+// unavailable in some sandboxed previews. If it fails the game still runs
+// normally — stats just reset when the page reloads.
+const SAVE_KEY = "theStreak.personalBest.v1";
+let storageAvailable = false;
+try {
+  const probe = "__ts_probe__";
+  window.localStorage.setItem(probe, "1");
+  window.localStorage.removeItem(probe);
+  storageAvailable = true;
+} catch(e){
+  storageAvailable = false;
+}
+
+function loadPersonalBest(){
+  if(!storageAvailable) return;
+  try {
+    const raw = window.localStorage.getItem(SAVE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(!data || typeof data !== "object") return;
+    if(typeof data.best === "number") best = data.best;
+    if(typeof data.bestRecordWins === "number") bestRecordWins = data.bestRecordWins;
+    if(typeof data.bestRecordLosses === "number") bestRecordLosses = data.bestRecordLosses;
+    if(typeof data.hitsAt34 === "number") hitsAt34 = data.hitsAt34;
+    if(typeof data.runs === "number") runs = data.runs;
+  } catch(e){ /* corrupt save — ignore and start fresh */ }
+}
+
+function savePersonalBest(){
+  if(!storageAvailable) return;
+  try {
+    window.localStorage.setItem(SAVE_KEY, JSON.stringify({
+      best: best || 0,
+      bestRecordWins: bestRecordWins,
+      bestRecordLosses: bestRecordLosses,
+      hitsAt34: hitsAt34 || 0,
+      runs: runs || 0
+    }));
+  } catch(e){ /* quota or blocked — in-memory play continues */ }
+}
+
+function resetPersonalBest(){
+  best = 0;
+  bestRecordWins = undefined;
+  bestRecordLosses = undefined;
+  hitsAt34 = 0;
+  runs = 0;
+  if(storageAvailable){
+    try { window.localStorage.removeItem(SAVE_KEY); } catch(e){}
+  }
+  refreshStatsBar();
+}
+
+function refreshStatsBar(){
+  document.getElementById("bestOut").textContent = best || 0;
+  document.getElementById("bestRecordOut").textContent =
+    bestRecordWins === undefined ? "—" : fmtRecord(bestRecordWins, bestRecordLosses);
+  const runsEl = document.getElementById("runsOut");
+  if(runsEl){
+    const r = runs || 0, h = hitsAt34 || 0;
+    runsEl.textContent = r === 0 ? "—" : `${r}${h ? ` · ${h}× perfect` : ""}`;
+  }
+  const resetBtn = document.getElementById("resetBestBtn");
+  if(resetBtn) resetBtn.style.display = (best || bestRecordWins !== undefined) ? "inline-block" : "none";
+}
+
 function finishRun(streakLen, hasLost, overallWins){
   clearEventZone();
   const losses = 34 - overallWins;
@@ -2143,6 +2441,7 @@ function finishRun(streakLen, hasLost, overallWins){
   document.getElementById("pauseBtn").style.display = "none";
 
   if(streakLen > (best||0)) best = streakLen;
+  runs = (runs||0) + 1;
   if(overallWins > (bestRecordWins===undefined ? -1 : bestRecordWins)){
     bestRecordWins = overallWins;
     bestRecordLosses = losses;
@@ -2151,6 +2450,7 @@ function finishRun(streakLen, hasLost, overallWins){
     hitsAt34 = (hitsAt34||0) + 1;
     launchConfetti();
   }
+  savePersonalBest();
 
   let verdict;
   if(streakLen >= 34){
@@ -2189,8 +2489,7 @@ function finishRun(streakLen, hasLost, overallWins){
   }
   document.getElementById("resultPanel").style.display = "block";
 
-  document.getElementById("bestOut").textContent = best;
-  document.getElementById("bestRecordOut").textContent = bestRecordWins===undefined ? "—" : fmtRecord(bestRecordWins, bestRecordLosses);
+  refreshStatsBar();
 }
 
 function updateGauge(val){
@@ -2228,12 +2527,67 @@ document.getElementById("newBtn").addEventListener("click", startDraft);
 document.getElementById("shareBtn").addEventListener("click", shareResult);
 document.getElementById("introStart").addEventListener("click", ()=>{
   document.getElementById("introOverlay").classList.add("hidden");
+  applyMode();
 });
 document.getElementById("howtoBtn").addEventListener("click", ()=>{
   document.getElementById("introOverlay").classList.remove("hidden");
 });
+document.getElementById("switchModeBtn").addEventListener("click", switchMode);
+document.getElementById("modeNormal").addEventListener("click", ()=>{
+  hardMode = false;
+  document.getElementById("modeNormal").classList.add("selected");
+  document.getElementById("modeHard").classList.remove("selected");
+});
+document.getElementById("modeHard").addEventListener("click", ()=>{
+  hardMode = true;
+  document.getElementById("modeHard").classList.add("selected");
+  document.getElementById("modeNormal").classList.remove("selected");
+});
+
+function applyMode(){
+  const badge = document.getElementById("modeBadge");
+  if(badge){
+    badge.textContent = hardMode ? "Hard mode" : "Normal mode";
+    badge.className = "mode-badge" + (hardMode ? " hard" : "");
+  }
+  const switchBtn = document.getElementById("switchModeBtn");
+  if(switchBtn) switchBtn.textContent = hardMode ? "Switch to Normal mode" : "Switch to Hard mode";
+  // Keep the intro selector in sync.
+  const mn = document.getElementById("modeNormal"), mh = document.getElementById("modeHard");
+  if(mn && mh){
+    mn.classList.toggle("selected", !hardMode);
+    mh.classList.toggle("selected", hardMode);
+  }
+  // Re-render the current draft view so stat visibility matches the mode.
+  if(spunTeam && !pendingPlayer && round < 6) showCandidates(spunTeam);
+  updateRosterTotals();
+  resetRosterHint();
+}
+
+function switchMode(){
+  const draftInProgress = round > 0 || Object.keys(roster).length > 0;
+  const goingHard = !hardMode;
+  const msg = draftInProgress
+    ? `Switch to ${goingHard ? "Hard" : "Normal"} mode? This starts a new draft.`
+    : `Switch to ${goingHard ? "Hard" : "Normal"} mode?`;
+  if(draftInProgress && !confirm(msg)) return;
+  hardMode = goingHard;
+  applyMode();
+  startDraft();
+}
+
+document.getElementById("resetBestBtn").addEventListener("click", ()=>{
+  if(confirm("Reset your personal best, best record, and run count? This can't be undone.")){
+    resetPersonalBest();
+  }
+});
 
 best = 0; runs = 0; hitsAt34 = 0; spinning = false;
+loadPersonalBest();
+document.getElementById("saveNote").textContent = storageAvailable
+  ? "Your best streak is saved on this device."
+  : "Saving is unavailable here — stats reset when you reload.";
+refreshStatsBar();
 startDraft();
 </script>
 </body>
