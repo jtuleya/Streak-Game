@@ -319,6 +319,11 @@
   .sim-streak-tracker.broken{border-color:var(--miss);background:linear-gradient(135deg, rgba(225,75,75,.12), rgba(225,75,75,.03));}
   .sim-streak-tracker.broken .sst-num{color:var(--miss);}
   .sim-streak-tracker.broken .sst-label{color:var(--miss);}
+  .sim-streak-tracker.endless{border-color:var(--gold);background:linear-gradient(135deg, rgba(212,175,55,.15), rgba(212,175,55,.03));}
+  .sim-streak-tracker.endless .sst-num{color:var(--gold2);}
+  .sim-streak-tracker.endless .sst-label{color:var(--gold);}
+  .glog-item.endless{outline:1px solid var(--gold);}
+  .event-panel.endless-unlock{border-color:var(--gold);background:linear-gradient(135deg, rgba(212,175,55,.14), rgba(212,175,55,.02));}
   @media(max-width:480px){
     .sim-streak-tracker{padding:12px 14px;gap:10px;}
     .sst-num{font-size:38px;}
@@ -418,7 +423,7 @@
         <div class="intro-step-num">1</div>
         <div class="intro-step-body">
           <div class="intro-step-title">Spin for a team</div>
-          <div class="intro-step-text">Each spin lands on a real NBA team-season &mdash; anything from the '72 Lakers to the tank-era Sixers. Every team has an equal shot.</div>
+          <div class="intro-step-text">Each spin lands on a real NBA team-season &mdash; anything from the '72 Lakers to the current era. Every team has an equal shot.</div>
         </div>
       </div>
       <div class="intro-step">
@@ -603,6 +608,7 @@ const OPPONENTS = [
   {n:33, date:"Jan 7, 1972", opp:"Atlanta Hawks"},
   {n:34, date:"Jan 9, 1972", opp:"Milwaukee Bucks", bonus:true}
 ];
+const BASE_SCHEDULE_LENGTH = OPPONENTS.length;
 
 const POSITIONS = ["PG","SG","SF","PF","C","6TH MAN"];
 const REAL_POS = ["PG","SG","SF","PF","C"];
@@ -886,16 +892,6 @@ const TEAM_POOL = [
     P("Chris Gatling","PF",12.1,6.3,0.9,0.7,0.6,[]),
     P("Kevin Edwards","SG",8.4,2.1,1.6,0.7,0.1,[]),
     P("Robert Pack","PG",8.8,2.0,3.7,0.9,0.1,[])
-  ]},
-  {team:"Milwaukee Bucks", season:"1970-71", notable:true, players:[
-    P("Kareem Abdul-Jabbar","C",31.7,16.0,3.3,0.8,2.0,["MVP","NBA Champion"]),
-    P("Oscar Robertson","PG",19.4,5.7,8.2,1.6,0.2,["NBA Champion"]),
-    P("Bob Dandridge","SF",18.4,7.6,2.6,1.1,0.5,["NBA Champion"]),
-    P("Jon McGlocklin","SG",15.8,3.0,3.0,0.9,0.1,["NBA Champion"]),
-    P("Greg Smith","PF",9.0,7.9,1.8,0.7,0.4,[]),
-    P("Bob Boozer","PF",9.5,5.9,1.3,0.6,0.3,[]),
-    P("Lucius Allen","PG",8.2,2.5,2.7,1.0,0.1,[]),
-    P("Dick Cunningham","C",4.4,4.6,0.6,0.3,0.4,[])
   ]},
   {team:"Boston Celtics", season:"1980-81", notable:true, players:[
     P("Larry Bird","SF",21.2,10.9,5.5,2.0,0.8,["NBA Champion"]),
@@ -1246,10 +1242,402 @@ const TEAM_POOL = [
     P("George Lynch","SF",8.4,7.2,1.7,1.2,0.4,[]),
     P("Toni Kukoc","SF",8.0,3.4,1.9,0.7,0.1,[]),
     P("Theo Ratliff","C",12.4,8.3,1.2,0.6,3.7,[])
+  ]},
+  {team:"New York Knicks", season:"1993-94", notable:true, players:[
+    P("Patrick Ewing","C",24.5,11.2,2.3,1.1,2.7,[]),
+    P("John Starks","SG",19.0,3.1,5.9,1.6,0.1,[]),
+    P("Charles Oakley","PF",11.8,11.8,2.7,1.3,0.2,[]),
+    P("Hubert Davis","SG",11.0,1.2,2.9,0.7,0.1,[]),
+    P("Charles Smith","PF",10.4,3.8,1.2,0.6,1.0,[]),
+    P("Derek Harper","PG",8.6,1.6,4.4,1.5,0.1,[]),
+    P("Anthony Mason","PF",7.2,5.8,2.1,0.4,0.1,[]),
+    P("Greg Anthony","PG",7.9,2.4,4.6,1.4,0.2,[])
+  ]},
+  {team:"Utah Jazz", season:"2021-22", notable:true, players:[
+    P("Donovan Mitchell","SG",25.9,4.2,5.3,1.5,0.2,[]),
+    P("Bojan Bogdanovic","SF",18.1,4.3,1.7,0.5,0.0,[]),
+    P("Jordan Clarkson","SG",16.0,3.5,2.5,0.8,0.2,[]),
+    P("Rudy Gobert","C",15.6,14.7,1.1,0.7,2.1,["Defensive Player of the Year"]),
+    P("Mike Conley","PG",13.7,3.0,5.3,1.3,0.3,[]),
+    P("Royce O'Neale","SF",7.4,4.8,2.5,1.1,0.4,[]),
+    P("Joe Ingles","SF",7.2,2.9,3.5,0.5,0.1,[]),
+    P("Hassan Whiteside","C",8.2,7.6,0.4,0.3,1.6,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"2024-25", notable:false, players:[
+    P("Tyrese Maxey","PG",26.3,3.3,6.1,1.8,0.4,[]),
+    P("Joel Embiid","C",23.8,8.2,4.5,0.7,0.9,[],"high"),
+    P("Quentin Grimes","SG",21.9,5.2,4.5,1.5,0.4,[]),
+    P("Paul George","SF",16.2,5.3,4.3,1.8,0.5,[]),
+    P("Jared McCain","SG",15.3,2.4,2.6,0.7,0.0,[]),
+    P("Kelly Oubre Jr.","SF",15.1,6.1,1.8,1.5,0.5,[]),
+    P("Guerschon Yabusele","PF",11.0,5.6,2.1,0.8,0.3,[]),
+    P("Andre Drummond","C",7.3,7.8,0.9,1.0,0.5,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"1971-72", notable:true, players:[
+    P("Gail Goodrich","SG",25.9,4.5,4.5,0,0,[]),
+    P("Jerry West","PG",25.8,4.2,9.7,0,0,[]),
+    P("Jim McMillian","SF",18.8,6.5,2.9,0,0,[]),
+    P("Wilt Chamberlain","C",14.8,19.2,4.0,0,0,[]),
+    P("Happy Hairston","PF",13.1,13.1,2.2,0,0,[]),
+    P("Flynn Robinson","PG",7.2,1.6,2.3,0,0,[]),
+    P("Pat Riley","SG",6.7,1.6,1.6,0,0,[]),
+    P("LeRoy Ellis","C",7.0,7.5,1.0,0,0,[])
+  ]},
+  {team:"Milwaukee Bucks", season:"1971-72", notable:true, players:[
+    P("Kareem Abdul-Jabbar","C",34.8,16.6,4.6,0,0,["MVP","Scoring Champion"]),
+    P("Bob Dandridge","SF",18.4,7.2,3.0,0,0,[]),
+    P("Oscar Robertson","PG",17.4,6.4,7.7,0,0,[]),
+    P("Jon McGlocklin","SG",12.7,2.6,3.3,0,0,[]),
+    P("Lucius Allen","PG",12.7,3.7,3.7,0,0,[]),
+    P("Greg Smith","PF",8.0,7.1,2.3,0,0,[]),
+    P("Curtis Perry","PF",7.6,7.5,1.2,0,0,[]),
+    P("Wali Jones","PG",7.2,1.5,2.5,0,0,[])
+  ]},
+  {team:"New York Knicks", season:"1972-73", notable:true, players:[
+    P("Walt Frazier","PG",21.1,5.9,5.9,0,0,[]),
+    P("Dave DeBusschere","PF",16.3,10.2,3.1,0,0,[]),
+    P("Bill Bradley","SF",16.1,3.4,3.9,0,0,[]),
+    P("Earl Monroe","SG",15.5,3.0,3.8,0,0,[]),
+    P("Willis Reed","C",11.0,8.6,1.9,0,0,[]),
+    P("Jerry Lucas","C",9.9,7.2,3.3,0,0,[]),
+    P("Dean Meminger","PG",6.4,2.4,3.0,0,0,[]),
+    P("Phil Jackson","PF",8.1,4.8,1.4,0,0,[])
+  ]},
+  {team:"Chicago Bulls", season:"1990-91", notable:true, players:[
+    P("Michael Jordan","SG",31.5,6.0,5.5,2.7,1.0,["MVP","Scoring Champion","NBA Champion"]),
+    P("Scottie Pippen","SF",17.8,7.3,6.2,2.4,1.1,["NBA Champion"]),
+    P("Horace Grant","PF",12.8,8.4,2.1,1.2,1.0,["NBA Champion"]),
+    P("Bill Cartwright","C",9.6,6.2,1.8,0.5,0.5,["NBA Champion"]),
+    P("John Paxson","PG",8.7,1.5,3.1,0.9,0.1,["NBA Champion"]),
+    P("B.J. Armstrong","PG",8.8,1.8,3.7,0.9,0.1,["NBA Champion"]),
+    P("Craig Hodges","SG",4.7,0.9,1.5,0.5,0.0,["NBA Champion"]),
+    P("Stacey King","PF",6.5,3.3,1.1,0.4,0.5,["NBA Champion"])
+  ]},
+  {team:"Chicago Bulls", season:"1996-97", notable:true, players:[
+    P("Michael Jordan","SG",29.6,5.9,4.3,1.7,0.5,["Scoring Champion","NBA Champion"]),
+    P("Scottie Pippen","SF",20.2,6.5,5.7,1.9,0.6,["NBA Champion"]),
+    P("Toni Kukoc","SF",13.2,4.0,4.6,1.1,0.5,["NBA Champion"]),
+    P("Luc Longley","C",9.1,5.1,2.8,0.4,1.2,["NBA Champion"]),
+    P("Ron Harper","PG",7.4,3.4,2.9,1.3,0.6,["NBA Champion"]),
+    P("Steve Kerr","PG",8.4,1.4,2.3,0.8,0.1,["NBA Champion"]),
+    P("Dennis Rodman","PF",5.7,16.1,3.4,0.6,0.3,["Rebounding Champion","NBA Champion"]),
+    P("Jud Buechler","SF",3.3,1.6,0.8,0.5,0.1,["NBA Champion"])
+  ]},
+  {team:"Chicago Bulls", season:"1997-98", notable:true, players:[
+    P("Michael Jordan","SG",28.7,5.8,3.5,1.7,0.5,["MVP","Scoring Champion","NBA Champion"]),
+    P("Scottie Pippen","SF",19.1,5.2,5.8,1.8,0.7,["NBA Champion"]),
+    P("Toni Kukoc","SF",13.3,4.8,4.2,0.9,0.4,["NBA Champion"]),
+    P("Ron Harper","PG",9.3,3.7,2.9,1.0,0.6,["NBA Champion"]),
+    P("Luc Longley","C",11.4,5.9,2.8,0.4,1.0,["NBA Champion"]),
+    P("Steve Kerr","PG",7.5,1.3,2.0,0.7,0.1,["NBA Champion"]),
+    P("Dennis Rodman","PF",4.7,15.0,2.9,0.5,0.2,["Rebounding Champion","NBA Champion"]),
+    P("Scott Burrell","SF",5.2,2.6,0.9,0.6,0.3,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"1979-80", notable:true, players:[
+    P("Kareem Abdul-Jabbar","C",24.8,10.8,4.5,1.0,3.4,["MVP","NBA Champion"]),
+    P("Jamaal Wilkes","SF",20.0,6.9,2.7,1.5,0.5,["NBA Champion"]),
+    P("Magic Johnson","PG",18.0,7.7,7.3,2.4,0.5,["NBA Champion"]),
+    P("Norm Nixon","PG",17.6,2.5,8.9,2.2,0.1,["NBA Champion"]),
+    P("Jim Chones","C",10.8,7.5,1.6,0.6,1.1,["NBA Champion"]),
+    P("Spencer Haywood","PF",9.7,4.8,0.9,0.5,0.9,["NBA Champion"]),
+    P("Michael Cooper","SG",8.8,3.1,3.2,1.2,0.6,["NBA Champion"]),
+    P("Mark Landsberger","PF",6.4,6.4,0.5,0.4,0.2,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"1984-85", notable:true, players:[
+    P("Kareem Abdul-Jabbar","C",22.0,7.9,3.2,0.8,2.1,["NBA Champion"]),
+    P("Magic Johnson","PG",18.3,6.2,12.6,1.5,0.2,["NBA Champion"]),
+    P("James Worthy","SF",17.6,5.2,2.8,1.0,0.8,["NBA Champion"]),
+    P("Byron Scott","SG",16.0,3.0,3.0,1.3,0.3,["NBA Champion"]),
+    P("Bob McAdoo","PF",12.2,4.2,1.2,0.4,1.0,["NBA Champion"]),
+    P("Michael Cooper","SG",9.2,2.8,5.1,1.4,0.7,["NBA Champion"]),
+    P("Kurt Rambis","PF",7.7,7.2,1.5,1.0,0.5,["NBA Champion"]),
+    P("Mitch Kupchak","PF",6.3,3.6,0.5,0.3,0.2,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"1987-88", notable:true, players:[
+    P("Byron Scott","SG",21.7,4.1,3.4,1.9,0.4,["NBA Champion"]),
+    P("James Worthy","SF",19.7,5.7,3.8,1.1,0.7,["NBA Champion"]),
+    P("Magic Johnson","PG",19.6,6.2,11.9,1.6,0.2,["NBA Champion"]),
+    P("Kareem Abdul-Jabbar","C",14.6,6.0,2.6,0.6,1.6,["NBA Champion"]),
+    P("A.C. Green","PF",11.4,8.7,1.1,1.0,0.5,["NBA Champion"]),
+    P("Michael Cooper","SG",10.5,2.4,4.2,1.2,0.6,["NBA Champion"]),
+    P("Mychal Thompson","C",10.1,4.9,0.8,0.4,0.9,["NBA Champion"]),
+    P("Kurt Rambis","PF",5.6,5.2,1.0,0.7,0.4,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"1988-89", notable:true, players:[
+    P("Magic Johnson","PG",22.5,7.9,12.8,1.8,0.3,["MVP"]),
+    P("James Worthy","SF",20.5,5.5,2.8,1.0,0.6,[]),
+    P("Byron Scott","SG",19.6,4.0,3.4,1.5,0.3,[]),
+    P("A.C. Green","PF",13.3,9.0,1.1,1.1,0.6,[]),
+    P("Kareem Abdul-Jabbar","C",10.1,4.5,1.7,0.5,1.1,[]),
+    P("Orlando Woolridge","SF",9.7,2.9,1.0,0.5,0.4,[]),
+    P("Mychal Thompson","C",9.4,4.7,0.7,0.3,0.7,[]),
+    P("Michael Cooper","SG",7.5,2.4,4.1,1.1,0.5,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"1990-91", notable:true, players:[
+    P("James Worthy","SF",21.4,4.9,3.9,1.1,0.4,[]),
+    P("Magic Johnson","PG",19.4,7.0,12.5,1.3,0.2,[]),
+    P("Sam Perkins","PF",14.7,7.5,1.4,1.0,0.8,[]),
+    P("Byron Scott","SG",14.5,3.3,2.8,1.3,0.3,[]),
+    P("Vlade Divac","C",11.2,8.1,1.1,1.0,1.4,[]),
+    P("A.C. Green","PF",9.1,7.2,0.8,0.8,0.3,[]),
+    P("Terry Teagle","SG",10.4,2.4,1.5,0.6,0.2,[]),
+    P("Elden Campbell","C",7.5,3.7,0.4,0.3,1.5,[])
+  ]},
+  {team:"Los Angeles Lakers", season:"1999-00", notable:true, players:[
+    P("Shaquille O'Neal","C",29.7,13.6,3.8,0.5,3.0,["MVP","Scoring Champion","NBA Champion"]),
+    P("Kobe Bryant","SG",22.5,6.3,4.9,1.6,0.9,["NBA Champion"]),
+    P("Glen Rice","SF",15.9,4.3,2.0,0.9,0.2,["NBA Champion"]),
+    P("Ron Harper","PG",7.0,3.7,2.9,0.9,0.4,["NBA Champion"]),
+    P("Robert Horry","PF",4.9,5.4,2.3,0.9,1.1,["NBA Champion"]),
+    P("Rick Fox","SF",6.3,2.9,2.1,0.9,0.3,["NBA Champion"]),
+    P("Derek Fisher","PG",6.3,2.2,2.8,1.0,0.1,["NBA Champion"]),
+    P("A.C. Green","PF",5.0,6.2,0.8,0.5,0.2,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"2001-02", notable:true, players:[
+    P("Shaquille O'Neal","C",27.2,10.7,3.0,0.6,2.0,["NBA Champion"]),
+    P("Kobe Bryant","SG",25.2,5.5,5.5,1.5,0.4,["NBA Champion"]),
+    P("Derek Fisher","PG",11.2,2.9,2.5,1.4,0.2,["NBA Champion"]),
+    P("Rick Fox","SF",8.4,4.0,3.2,1.2,0.4,["NBA Champion"]),
+    P("Robert Horry","PF",5.6,6.1,2.7,1.1,1.3,["NBA Champion"]),
+    P("Devean George","SF",6.3,3.4,0.9,0.6,0.6,["NBA Champion"]),
+    P("Brian Shaw","PG",5.6,2.5,2.8,0.6,0.2,["NBA Champion"]),
+    P("Samaki Walker","C",5.8,5.5,0.7,0.4,0.5,["NBA Champion"])
+  ]},
+  {team:"Los Angeles Lakers", season:"2008-09", notable:true, players:[
+    P("Kobe Bryant","SG",26.8,5.2,4.9,1.5,0.5,["NBA Champion"]),
+    P("Pau Gasol","PF",18.9,9.6,3.5,0.6,1.0,["NBA Champion"]),
+    P("Andrew Bynum","C",14.3,8.0,1.4,0.3,1.8,["NBA Champion"]),
+    P("Lamar Odom","PF",11.3,8.2,2.6,1.0,0.9,["NBA Champion"]),
+    P("Derek Fisher","PG",9.9,2.3,3.2,1.0,0.1,["NBA Champion"]),
+    P("Trevor Ariza","SF",8.9,4.3,1.8,1.7,0.3,["NBA Champion"]),
+    P("Jordan Farmar","PG",6.4,1.7,2.4,0.9,0.1,["NBA Champion"]),
+    P("Sasha Vujacic","SG",5.8,1.7,1.3,0.5,0.1,["NBA Champion"])
+  ]},
+  {team:"Detroit Pistons", season:"1989-90", notable:true, players:[
+    P("Isiah Thomas","PG",18.4,3.8,9.4,1.7,0.2,["Finals MVP","NBA Champion"]),
+    P("Joe Dumars","SG",17.8,2.8,4.9,0.9,0.1,["NBA Champion"]),
+    P("James Edwards","C",14.5,4.0,0.9,0.3,0.6,["NBA Champion"]),
+    P("Mark Aguirre","SF",14.1,3.9,1.8,0.5,0.2,["NBA Champion"]),
+    P("Bill Laimbeer","C",12.1,9.6,1.8,0.5,0.4,["NBA Champion"]),
+    P("Vinnie Johnson","SG",12.2,3.0,2.9,0.8,0.1,["NBA Champion"]),
+    P("Dennis Rodman","PF",8.8,9.7,0.9,0.7,0.6,["Defensive Player of the Year","NBA Champion"]),
+    P("John Salley","PF",7.7,4.6,1.0,0.6,1.4,["NBA Champion"])
+  ]},
+  {team:"Golden State Warriors", season:"2016-17", notable:true, players:[
+    P("Kevin Durant","SF",25.1,8.3,4.8,1.1,1.6,["NBA Champion"]),
+    P("Stephen Curry","PG",25.3,4.5,6.6,1.8,0.2,["NBA Champion"]),
+    P("Klay Thompson","SG",22.3,3.7,2.1,0.8,0.5,["NBA Champion"]),
+    P("Draymond Green","PF",10.2,7.9,7.0,2.0,1.4,["Defensive Player of the Year","NBA Champion"]),
+    P("Andre Iguodala","SF",7.6,4.0,3.4,1.0,0.5,["NBA Champion"]),
+    P("Zaza Pachulia","C",6.1,5.9,1.9,0.9,0.2,["NBA Champion"]),
+    P("Shaun Livingston","PG",5.1,2.0,1.8,0.6,0.3,["NBA Champion"]),
+    P("David West","PF",4.6,3.3,2.1,0.5,0.8,["NBA Champion"])
+  ]},
+  {team:"Golden State Warriors", season:"2017-18", notable:true, players:[
+    P("Kevin Durant","SF",26.4,6.8,5.4,0.7,1.8,["NBA Champion"]),
+    P("Stephen Curry","PG",26.4,5.1,6.1,1.6,0.2,["NBA Champion"]),
+    P("Klay Thompson","SG",20.0,3.8,2.5,0.8,0.5,["NBA Champion"]),
+    P("Draymond Green","PF",11.0,7.6,7.3,1.4,1.3,["NBA Champion"]),
+    P("Quinn Cook","PG",9.5,2.3,2.7,0.5,0.1,["NBA Champion"]),
+    P("Nick Young","SG",7.3,1.7,0.5,0.6,0.2,["NBA Champion"]),
+    P("Andre Iguodala","SF",6.0,4.0,3.3,0.8,0.6,["NBA Champion"]),
+    P("Kevon Looney","C",4.0,3.3,0.6,0.4,0.7,["NBA Champion"])
+  ]},
+  {team:"Golden State Warriors", season:"2018-19", notable:true, players:[
+    P("Stephen Curry","PG",27.3,5.3,5.2,1.3,0.4,[]),
+    P("Kevin Durant","SF",26.0,6.4,5.9,0.7,1.1,[]),
+    P("Klay Thompson","SG",21.5,3.8,2.4,1.1,0.6,[]),
+    P("DeMarcus Cousins","C",16.3,8.2,3.6,1.3,1.5,[]),
+    P("Draymond Green","PF",7.4,7.3,6.9,1.4,1.1,[]),
+    P("Andre Iguodala","SF",5.7,3.7,3.2,0.9,0.8,[]),
+    P("Quinn Cook","PG",6.9,2.0,1.6,0.4,0.1,[]),
+    P("Kevon Looney","C",6.3,5.2,1.5,0.6,0.7,[])
+  ]},
+  {team:"Golden State Warriors", season:"2021-22", notable:true, players:[
+    P("Stephen Curry","PG",25.5,5.2,6.3,1.3,0.4,["NBA Champion"]),
+    P("Klay Thompson","SG",20.4,3.9,2.8,0.5,0.5,["NBA Champion"]),
+    P("Jordan Poole","SG",18.5,3.4,4.0,0.8,0.3,["NBA Champion"]),
+    P("Andrew Wiggins","SF",17.2,4.5,2.2,1.0,0.7,["NBA Champion"]),
+    P("Otto Porter Jr.","SF",8.2,5.7,1.5,1.1,0.6,["NBA Champion"]),
+    P("Draymond Green","PF",7.5,7.3,7.0,1.3,1.1,["NBA Champion"]),
+    P("Gary Payton II","PG",7.1,3.5,0.9,1.4,0.5,["NBA Champion"]),
+    P("Kevon Looney","C",6.0,7.3,2.0,0.6,0.6,["NBA Champion"])
+  ]},
+  {team:"San Antonio Spurs", season:"2004-05", notable:true, players:[
+    P("Tim Duncan","C",20.3,11.1,2.7,0.7,2.6,["NBA Champion"]),
+    P("Manu Ginobili","SG",16.0,4.4,3.9,1.6,0.4,["NBA Champion"]),
+    P("Tony Parker","PG",16.6,3.7,6.1,1.2,0.1,["NBA Champion"]),
+    P("Brent Barry","SG",7.4,2.9,2.5,0.9,0.2,["NBA Champion"]),
+    P("Nazr Mohammed","C",6.4,5.2,0.4,0.4,0.6,["NBA Champion"]),
+    P("Bruce Bowen","SF",6.5,3.1,1.7,0.9,0.4,["NBA Champion"]),
+    P("Robert Horry","PF",6.0,4.7,1.8,0.8,0.8,["NBA Champion"]),
+    P("Beno Udrih","PG",5.5,1.7,2.3,0.6,0.1,["NBA Champion"])
+  ]},
+  {team:"San Antonio Spurs", season:"2006-07", notable:true, players:[
+    P("Tim Duncan","C",20.0,10.6,3.4,0.8,2.4,["NBA Champion"]),
+    P("Tony Parker","PG",18.6,3.2,5.5,1.1,0.1,["NBA Champion"]),
+    P("Manu Ginobili","SG",16.5,4.4,3.5,1.4,0.4,["NBA Champion"]),
+    P("Michael Finley","SG",9.8,3.5,1.9,0.7,0.2,["NBA Champion"]),
+    P("Brent Barry","SG",8.5,2.7,3.0,0.8,0.2,["NBA Champion"]),
+    P("Bruce Bowen","SF",6.2,2.7,1.3,0.6,0.3,["NBA Champion"]),
+    P("Fabricio Oberto","C",5.0,5.3,1.2,0.5,0.4,["NBA Champion"]),
+    P("Robert Horry","PF",5.0,4.0,1.4,0.7,0.7,["NBA Champion"])
+  ]},
+  {team:"San Antonio Spurs", season:"2013-14", notable:true, players:[
+    P("Tony Parker","PG",16.7,2.3,5.7,0.5,0.1,["NBA Champion"]),
+    P("Tim Duncan","C",15.1,9.7,3.0,0.6,1.9,["NBA Champion"]),
+    P("Kawhi Leonard","SF",12.8,6.2,2.0,1.7,0.8,["Finals MVP","NBA Champion"]),
+    P("Manu Ginobili","SG",12.3,3.0,4.3,1.2,0.3,["NBA Champion"]),
+    P("Marco Belinelli","SG",11.4,2.6,2.2,0.7,0.1,["NBA Champion"]),
+    P("Tiago Splitter","C",8.2,6.6,1.4,0.6,0.9,["NBA Champion"]),
+    P("Boris Diaw","PF",9.1,4.1,2.8,0.5,0.4,["NBA Champion"]),
+    P("Danny Green","SG",9.1,3.4,1.8,1.2,0.9,["NBA Champion"])
+  ]},
+  {team:"Miami Heat", season:"2005-06", notable:true, players:[
+    P("Dwyane Wade","SG",27.2,5.7,6.7,1.9,0.8,["NBA Champion"]),
+    P("Shaquille O'Neal","C",20.0,9.2,1.9,0.4,1.8,["NBA Champion"]),
+    P("Antoine Walker","SF",12.2,4.6,2.3,0.9,0.2,["NBA Champion"]),
+    P("Jason Williams","PG",12.3,2.5,4.9,1.0,0.1,["NBA Champion"]),
+    P("Udonis Haslem","PF",9.0,7.9,1.1,0.6,0.5,["NBA Champion"]),
+    P("James Posey","SF",7.3,4.5,1.4,1.1,0.5,["NBA Champion"]),
+    P("Gary Payton","PG",7.7,2.7,3.2,1.0,0.2,["NBA Champion"]),
+    P("Alonzo Mourning","C",7.8,5.5,0.3,0.3,2.7,["NBA Champion"])
+  ]},
+  {team:"Miami Heat", season:"2011-12", notable:true, players:[
+    P("LeBron James","SF",27.1,7.9,6.2,1.9,0.8,["MVP","Finals MVP","NBA Champion"]),
+    P("Dwyane Wade","SG",22.1,4.8,4.6,1.7,1.3,["NBA Champion"]),
+    P("Chris Bosh","PF",18.0,7.9,1.8,0.8,0.8,["NBA Champion"]),
+    P("Mario Chalmers","PG",9.8,2.9,3.5,1.4,0.2,["NBA Champion"]),
+    P("Udonis Haslem","PF",6.0,7.3,0.7,0.4,0.4,["NBA Champion"]),
+    P("Shane Battier","SF",5.4,2.6,1.2,1.0,0.6,["NBA Champion"]),
+    P("Norris Cole","PG",6.8,1.8,2.0,0.7,0.1,["NBA Champion"]),
+    P("Mike Miller","SG",6.1,3.9,1.7,0.6,0.1,["NBA Champion"])
+  ]},
+  {team:"Miami Heat", season:"2013-14", notable:true, players:[
+    P("LeBron James","SF",27.1,6.9,6.3,1.6,0.3,[]),
+    P("Dwyane Wade","SG",19.0,4.5,4.7,1.5,0.5,[]),
+    P("Chris Bosh","PF",16.2,6.6,1.1,1.0,1.0,[]),
+    P("Ray Allen","SG",9.6,2.8,2.1,0.9,0.2,[]),
+    P("Mario Chalmers","PG",9.8,2.9,4.9,1.5,0.2,[]),
+    P("Chris Andersen","C",6.6,5.3,0.7,0.5,1.3,[]),
+    P("Norris Cole","PG",6.4,1.7,3.2,1.1,0.2,[]),
+    P("Rashard Lewis","SF",4.6,2.9,0.9,0.5,0.3,[])
+  ]},
+  {team:"Miami Heat", season:"2022-23", notable:false, players:[
+    P("Jimmy Butler","SF",22.9,5.9,5.3,1.8,0.3,[]),
+    P("Bam Adebayo","C",20.4,9.2,3.2,1.2,0.8,[]),
+    P("Tyler Herro","SG",20.1,5.4,4.2,0.8,0.2,[]),
+    P("Max Strus","SG",11.5,3.2,1.4,0.6,0.2,[]),
+    P("Kyle Lowry","PG",11.2,3.1,5.1,1.1,0.3,[]),
+    P("Caleb Martin","SF",9.6,4.6,1.5,0.7,0.4,[]),
+    P("Gabe Vincent","PG",9.4,1.7,2.5,0.7,0.1,[]),
+    P("Duncan Robinson","SG",6.4,1.6,1.3,0.4,0.1,[])
+  ]},
+  {team:"Cleveland Cavaliers", season:"2015-16", notable:true, players:[
+    P("LeBron James","SF",25.3,7.4,6.8,1.4,0.6,["NBA Champion"]),
+    P("Kyrie Irving","PG",19.6,3.0,4.7,1.1,0.3,["NBA Champion"]),
+    P("Kevin Love","PF",16.0,9.9,2.4,0.8,0.5,["NBA Champion"]),
+    P("J.R. Smith","SG",12.4,2.8,1.7,1.1,0.3,["NBA Champion"]),
+    P("Tristan Thompson","C",7.8,9.0,0.8,0.5,0.6,["NBA Champion"]),
+    P("Channing Frye","C",7.3,3.5,0.8,0.4,0.6,["NBA Champion"]),
+    P("Matthew Dellavedova","PG",7.5,2.0,4.4,0.8,0.1,["NBA Champion"]),
+    P("Iman Shumpert","SG",5.8,3.1,1.7,1.1,0.4,["NBA Champion"])
+  ]},
+  {team:"Boston Celtics", season:"1973-74", notable:true, players:[
+    P("John Havlicek","SF",22.6,7.0,5.9,1.3,0.4,["NBA Champion"]),
+    P("Dave Cowens","C",19.0,15.7,4.1,1.2,0.8,["NBA Champion"]),
+    P("Jo Jo White","PG",18.1,5.6,5.5,1.4,0.2,["NBA Champion"]),
+    P("Don Chaney","SG",11.1,4.4,2.9,2.2,0.9,["NBA Champion"]),
+    P("Paul Silas","PF",10.6,13.0,2.7,0.9,0.5,["NBA Champion"]),
+    P("Don Nelson","SF",11.0,4.7,1.9,0.5,0.2,["NBA Champion"]),
+    P("Hank Finkel","C",3.0,3.4,0.6,0.2,0.5,["NBA Champion"]),
+    P("Art Williams","PG",3.9,2.7,3.2,1.0,0.1,["NBA Champion"])
+  ]},
+  {team:"Houston Rockets", season:"1985-86", notable:true, players:[
+    P("Hakeem Olajuwon","C",23.5,11.5,2.0,2.0,3.4,[]),
+    P("Ralph Sampson","C",18.9,11.1,3.6,0.9,1.6,[]),
+    P("Lewis Lloyd","SG",12.6,3.5,4.1,1.4,0.2,[]),
+    P("Mitchell Wiggins","SG",12.5,3.7,1.9,1.3,0.3,[]),
+    P("Robert Reid","SF",11.9,4.9,3.6,1.2,0.4,[]),
+    P("Rodney McCray","SF",11.4,6.5,3.7,0.9,0.6,[]),
+    P("Allen Leavell","PG",9.6,2.0,5.4,1.5,0.1,[]),
+    P("Jim Petersen","PF",7.5,5.1,1.0,0.5,1.0,[])
+  ]},
+  {team:"Orlando Magic", season:"1994-95", notable:true, players:[
+    P("Shaquille O'Neal","C",29.3,11.4,2.7,0.9,2.4,["Scoring Champion"]),
+    P("Penny Hardaway","PG",20.9,4.4,7.2,1.7,0.3,[]),
+    P("Nick Anderson","SG",15.8,5.4,3.7,1.6,0.5,[]),
+    P("Dennis Scott","SF",12.9,3.3,2.5,1.1,0.3,[]),
+    P("Horace Grant","PF",12.8,9.7,2.4,1.0,1.1,[]),
+    P("Brian Shaw","PG",6.6,3.0,5.2,1.0,0.2,[]),
+    P("Donald Royal","SF",8.1,3.3,1.3,0.6,0.2,[]),
+    P("Anthony Bowie","SG",7.4,2.7,2.6,0.8,0.2,[])
+  ]},
+  {team:"Milwaukee Bucks", season:"2000-01", notable:true, players:[
+    P("Glenn Robinson","SF",22.0,6.9,3.2,1.1,0.4,[]),
+    P("Ray Allen","SG",22.0,5.2,4.6,1.5,0.4,[]),
+    P("Sam Cassell","PG",18.2,3.7,7.6,1.3,0.1,[]),
+    P("Tim Thomas","PF",12.6,4.5,1.6,0.8,0.6,[]),
+    P("Lindsey Hunter","PG",8.6,2.3,2.6,1.4,0.1,[]),
+    P("Ervin Johnson","C",5.2,8.4,0.7,0.7,1.9,[]),
+    P("Scott Williams","PF",5.9,4.8,0.9,0.5,0.5,[]),
+    P("Darvin Ham","PF",3.0,2.7,0.5,0.4,0.3,[])
+  ]},
+  {team:"Milwaukee Bucks", season:"2018-19", notable:true, players:[
+    P("Giannis Antetokounmpo","PF",27.7,12.5,5.9,1.3,1.5,["MVP"]),
+    P("Khris Middleton","SF",18.3,6.0,4.3,1.0,0.1,[]),
+    P("Eric Bledsoe","PG",15.9,4.6,5.5,1.5,0.4,[]),
+    P("Malcolm Brogdon","PG",15.6,4.5,3.2,0.7,0.2,[]),
+    P("Brook Lopez","C",12.5,4.9,1.2,0.6,2.2,[]),
+    P("Ersan Ilyasova","PF",13.5,5.5,1.4,0.8,0.4,[]),
+    P("Nikola Mirotic","PF",11.6,5.6,1.4,0.7,0.5,[]),
+    P("George Hill","PG",6.8,2.4,2.7,0.8,0.2,[])
+  ]},
+  {team:"Phoenix Suns", season:"2020-21", notable:true, players:[
+    P("Devin Booker","SG",25.6,4.2,4.3,0.8,0.2,[]),
+    P("Chris Paul","PG",16.4,4.5,8.9,1.4,0.3,[]),
+    P("Deandre Ayton","C",14.4,10.5,1.4,0.7,1.2,[]),
+    P("Mikal Bridges","SF",13.5,4.3,2.1,1.1,1.0,[]),
+    P("Jae Crowder","PF",10.1,5.1,2.0,0.9,0.4,[]),
+    P("Cameron Johnson","SF",9.6,3.3,1.5,0.7,0.4,[]),
+    P("Cameron Payne","PG",8.4,2.0,3.6,0.9,0.2,[]),
+    P("Torrey Craig","SF",6.3,4.1,0.9,0.6,0.7,[])
+  ]},
+  {team:"Brooklyn Nets", season:"2020-21", notable:true, players:[
+    P("Kevin Durant","SF",26.9,7.1,5.6,0.7,1.3,[]),
+    P("Kyrie Irving","SG",26.9,4.8,6.0,1.4,0.7,[]),
+    P("James Harden","PG",24.6,8.5,10.9,1.3,0.8,[]),
+    P("Joe Harris","SG",14.1,3.6,1.9,0.7,0.2,[]),
+    P("Blake Griffin","PF",10.0,4.7,2.4,0.6,0.3,[]),
+    P("Landry Shamet","SG",9.3,1.9,1.6,0.5,0.2,[]),
+    P("Bruce Brown","SF",8.8,5.4,1.8,0.6,0.4,[]),
+    P("DeAndre Jordan","C",7.5,7.5,1.4,0.5,1.2,[])
+  ]},
+  {team:"Dallas Mavericks", season:"2023-24", notable:true, players:[
+    P("Luka Doncic","PG",33.9,9.2,9.8,1.4,0.5,["Scoring Champion"]),
+    P("Kyrie Irving","SG",25.6,5.0,5.2,1.3,0.5,[]),
+    P("Tim Hardaway Jr.","SG",14.4,3.0,1.8,0.7,0.3,[]),
+    P("P.J. Washington","PF",12.9,5.9,2.2,0.9,0.8,[]),
+    P("Daniel Gafford","C",10.9,7.9,1.4,0.6,2.1,[]),
+    P("Derrick Jones Jr.","SF",8.6,3.3,1.2,0.8,0.6,[]),
+    P("Dereck Lively II","C",8.8,6.9,1.1,0.6,1.4,[]),
+    P("Josh Green","SG",8.2,2.7,2.2,0.9,0.2,[])
+  ]},
+  {team:"Philadelphia 76ers", season:"1979-80", notable:true, players:[
+    P("Julius Erving","SF",26.9,7.4,4.6,2.2,1.8,[]),
+    P("Doug Collins","SG",18.2,3.2,3.3,1.4,0.3,[]),
+    P("Darryl Dawkins","C",14.7,8.7,1.4,0.6,1.4,[]),
+    P("Bobby Jones","PF",12.1,5.4,3.1,1.5,1.4,[]),
+    P("Maurice Cheeks","PG",11.4,3.5,7.0,2.4,0.4,[]),
+    P("Steve Mix","SF",11.8,5.1,2.3,1.2,0.3,[]),
+    P("Caldwell Jones","C",8.3,9.4,1.9,0.6,2.1,[]),
+    P("Henry Bibby","PG",6.9,1.9,3.6,1.0,0.1,[])
   ]}
 ];
 
 const TEAM_COLORS = {
+  "Brooklyn Nets": {bg:"#161616", text:"#CFCFCF", border:"#777777"},
+  "New York Knicks": {bg:"#0A1A2E", text:"#F58426", border:"#006BB6"},
   "Detroit Pistons": {bg:"#2A0A16", text:"#E0607A", border:"#C8102E"},
   "Charlotte Hornets": {bg:"#0A2320", text:"#3FBFA8", border:"#1D9E88"},
   "New Orleans Pelicans": {bg:"#1A1420", text:"#B08CC4", border:"#85714D"},
@@ -1315,7 +1703,21 @@ const STAR_SHOOTING = {
   "Robert Parish": {fg:54.8, tp:null},
   "David Robinson": {fg:50.7, tp:20},
   "Tony Parker": {fg:44.9, tp:20.6},
-  "Manu Ginobili": {fg:39.9, tp:32.6}
+  "Manu Ginobili": {fg:39.9, tp:32.6},
+  "Mike Conley": {fg:43.5, tp:40.8},
+  "Bojan Bogdanovic": {fg:45.5, tp:38.7},
+  "Donovan Mitchell": {fg:44.8, tp:35.5},
+  "Royce O'Neale": {fg:45.7, tp:38.9},
+  "J.J. Redick": {fg:44.9, tp:41.5},
+  "Kyle Korver": {fg:43.3, tp:42.9},
+  "Reggie Miller": {fg:47.1, tp:39.5},
+  "Dale Ellis": {fg:48.0, tp:40.3},
+  "Dell Curry": {fg:45.5, tp:40.2},
+  "Steve Nash": {fg:49.0, tp:42.8},
+  "Peja Stojakovic": {fg:45.0, tp:40.1},
+  "Danny Green": {fg:43.6, tp:40.0},
+  "Kevin Durant": {fg:49.7, tp:38.5},
+  "Damian Lillard": {fg:43.7, tp:37.1}
 };
 
 function assignShootingDefaults(){
@@ -1924,6 +2326,10 @@ function initSimUI(){
 
   const log = document.getElementById("gamelog");
   log.innerHTML = "";
+  // Remove any endless-mode games appended during a previous perfect run.
+  if(OPPONENTS.length > BASE_SCHEDULE_LENGTH) OPPONENTS.length = BASE_SCHEDULE_LENGTH;
+  const tracker = document.querySelector(".sim-streak-tracker");
+  if(tracker) tracker.classList.remove("endless");
   OPPONENTS.forEach(g=>{
     const item = document.createElement("div");
     item.className = "glog-item pending" + (g.bonus ? " bonus" : "");
@@ -1932,7 +2338,7 @@ function initSimUI(){
     log.appendChild(item);
   });
 
-  simState = {i:0, streakLen:0, milestonesHit:new Set(), hasLost:false, overallWins:0, mode:"manual", processing:false, chemistry:55, injuredOut:[], paused:false};
+  simState = {i:0, streakLen:0, milestonesHit:new Set(), hasLost:false, overallWins:0, mode:"manual", processing:false, chemistry:55, injuredOut:[], paused:false, endless:false};
   updateGauge(0);
   updateChemistryUI();
   updateSimTracker();
@@ -1958,7 +2364,15 @@ function updateSimTracker(){
     const losses = simState.i - simState.overallWins;
     recEl.textContent = `${simState.overallWins}-${losses}`;
   }
-  if(toGoEl) toGoEl.textContent = Math.max(0, 34 - simState.streakLen);
+  if(toGoEl){
+    if(simState.endless || simState.streakLen >= 34){
+      toGoEl.textContent = simState.streakLen > 33 ? `+${simState.streakLen - 33}` : "0";
+      const lbl = toGoEl.nextElementSibling;
+      if(lbl && lbl.classList.contains("sst-stat-label")) lbl.textContent = "past record";
+    } else {
+      toGoEl.textContent = Math.max(0, 34 - simState.streakLen);
+    }
+  }
   if(tracker) tracker.classList.toggle("broken", simState.hasLost);
 }
 
@@ -2023,8 +2437,23 @@ function advanceSim(){
 
 function stepGame(){
   if(simState.i >= OPPONENTS.length){
-    finishRun(simState.streakLen, simState.hasLost, simState.overallWins);
-    return;
+    // Reached the end of the real 34-game schedule.
+    // If the streak is still perfectly alive at 34, unlock endless mode:
+    // the player can keep going against generated opponents until a loss.
+    if(!simState.hasLost && simState.streakLen >= 34 && !simState.endless){
+      offerEndlessMode();
+      return;
+    }
+    // In endless mode, keep generating games until the streak breaks.
+    if(simState.endless && !simState.hasLost){
+      const g = makeEndlessGame();
+      OPPONENTS.push(g);
+      appendEndlessGameLog(g);
+      // fall through to play it
+    } else {
+      finishRun(simState.streakLen, simState.hasLost, simState.overallWins);
+      return;
+    }
   }
 
   const dueIdx = simState.injuredOut.findIndex(e => e.returnAtGameIndex <= simState.i);
@@ -2043,11 +2472,71 @@ function stepGame(){
   setTimeout(()=> revealGame(g, item), simState.hasLost ? 260 : 850);
 }
 
+// A pool of plausible opponents for endless mode (post-streak).
+const ENDLESS_OPPONENTS = [
+  "at Chicago Bulls","vs Boston Celtics","at Phoenix Suns","vs New York Knicks",
+  "at Golden State Warriors","vs Detroit Pistons","at Atlanta Hawks","vs Seattle SuperSonics",
+  "at Cleveland Cavaliers","vs Philadelphia 76ers","at Portland Trail Blazers","vs Kansas City Kings",
+  "at Houston Rockets","vs Baltimore Bullets","at San Antonio Spurs","vs Buffalo Braves"
+];
+
+function makeEndlessGame(){
+  const n = OPPONENTS.length + 1;
+  const opp = ENDLESS_OPPONENTS[Math.floor(Math.random()*ENDLESS_OPPONENTS.length)];
+  return {n, date:`Streak game ${n}`, opp, bonus:false, endless:true};
+}
+
+function appendEndlessGameLog(g){
+  const log = document.getElementById("gamelog");
+  if(!log) return;
+  const item = document.createElement("div");
+  item.className = "glog-item pending endless";
+  item.id = "glog-"+g.n;
+  item.innerHTML = `<div class="n">Gm ${g.n} · beyond the record</div><div class="opp">${g.opp}</div><div class="score">&mdash;</div>`;
+  log.appendChild(item);
+}
+
+function offerEndlessMode(){
+  simState.processing = false;
+  const zone = document.getElementById("eventZone");
+  zone.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "event-panel endless-unlock";
+  panel.innerHTML = `
+    <div class="event-title">🏆 34-0 — PERFECT RUN</div>
+    <div class="event-text">You matched the full schedule without a single loss and stand alone atop the all-time list. You've unlocked <b>Endless Mode</b>: keep the streak going against a gauntlet of opponents and see how far past the record you can push — until you finally lose.</div>
+    <div class="event-actions">
+      <button class="event-btn secondary" id="endlessStop">Stop at 34 (bank it)</button>
+      <button class="event-btn" id="endlessGo">Enter Endless Mode</button>
+    </div>
+  `;
+  zone.appendChild(panel);
+  panel.scrollIntoView({behavior:"smooth", block:"center"});
+  document.getElementById("endlessStop").addEventListener("click", ()=>{
+    clearEventZone();
+    finishRun(simState.streakLen, simState.hasLost, simState.overallWins);
+  });
+  document.getElementById("endlessGo").addEventListener("click", ()=>{
+    clearEventZone();
+    simState.endless = true;
+    document.getElementById("simStatus").textContent = "Endless Mode — beyond the record";
+    const tracker = document.querySelector(".sim-streak-tracker");
+    if(tracker) tracker.classList.add("endless");
+    advanceSim();
+  });
+}
+
 function revealGame(g, item){
   item.classList.remove("suspense");
   const arr = rosterArray();
   const avg = effectiveComposite(arr);
-  const pWin = pWinFor(avg, simState.i);
+  let pWin = pWinFor(avg, simState.i);
+  // Endless mode: each game past the record chips away at the odds so the run
+  // always ends eventually, no matter how stacked the roster.
+  if(simState.endless){
+    const beyond = simState.streakLen - 33;
+    pWin = Math.max(0.30, pWin - beyond * 0.012);
+  }
   const won = Math.random() < pWin;
   const score = genScore(won, pWin);
   item.querySelector(".score").textContent = `${score.your}\u2013${score.opp}`;
@@ -2502,10 +2991,12 @@ function refreshStatsBar(){
 
 function finishRun(streakLen, hasLost, overallWins){
   clearEventZone();
-  const losses = 34 - overallWins;
+  const gamesPlayed = (simState && simState.i) ? simState.i : 34;
+  const losses = gamesPlayed - overallWins;
+  const wentEndless = !!(simState && simState.endless);
   document.getElementById("simStatus").textContent = hasLost
-    ? `Streak ended at ${streakLen} · finished ${overallWins}-${losses} over 34`
-    : `Ran undefeated, 34-0`;
+    ? `Streak ended at ${streakLen} · finished ${overallWins}-${losses} over ${gamesPlayed}`
+    : `Ran undefeated, ${overallWins}-0`;
   document.getElementById("newBtn").disabled = false;
   document.getElementById("newBtn").textContent = "Draft again";
   document.getElementById("shareBtn").disabled = false;
@@ -2528,7 +3019,10 @@ function finishRun(streakLen, hasLost, overallWins){
   savePersonalBest();
 
   let verdict;
-  if(streakLen >= 34){
+  if(wentEndless && streakLen > 34){
+    verdict = `${streakLen} in a row — <b>${streakLen - 33} games past the Lakers' record</b> in Endless Mode before the run finally ended. That's a legendary, record-shattering streak.`;
+    showMilestone(`${streakLen} straight — ${streakLen - 33} beyond the record!`);
+  } else if(streakLen >= 34){
     verdict = "34 straight. Your lineup beat Milwaukee on Jan. 9, 1972 &mdash; the exact game that ended the real streak &mdash; and broke the NBA record.";
     showMilestone("34 straight — you broke the record.");
   } else if(streakLen === 33){
